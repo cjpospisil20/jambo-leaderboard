@@ -17,6 +17,21 @@
 /* ---------- 1. Self-hosted display face --------------------------------- */
 /* National Park, latin subset, from @fontsource/national-park@5.3.0.
    Self-hosted so the board never depends on a font CDN being reachable. */
+/* Koloss — Jakob Erbar, 1923; digitised by Dieter Steffmann, 1999.
+   Self-hosted from 1001Fonts under their Free For Commercial Use licence,
+   which explicitly permits @font-face embedding. TTF is the only format
+   published; the licence enumerates WOFF/SVG/EOT but predates WOFF2, so the
+   original file is served unconverted. 22.6 KB.
+   https://www.1001fonts.com/koloss-font.html
+   NOTE: no ballot-box glyphs (U+2610/2611) — see .check below. */
+@font-face {
+  font-family: "Koloss";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/koloss-regular.ttf") format("truetype");
+}
+
 @font-face {
   font-family: "National Park";
   font-style: normal;
@@ -75,9 +90,16 @@
   --shadow-press:    0px 0px 0px 0px var(--border);
 
   /* type */
-  --font-display:    "National Park", "Volkhov", Georgia, serif;
+  /* Koloss is the display face — group band and column labels only. Its
+     counters are far too tight to carry values at cell size, so everything
+     else on the board is a condensed grotesque. National Park stays in the
+     stack so a failed Koloss load degrades to the previous look, not Georgia. */
+  --font-display:    "Koloss", "National Park", "Volkhov", Georgia, serif;
   --font-script:     "Yellowtail", "Brush Script MT", cursive;
-  --font-body:       "Courier Prime", "DM Mono", "Share Tech Mono", ui-monospace, monospace;
+  --font-body:       "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  /* Neither Koloss nor Oswald has U+2610/2611, so the tick column falls all
+     the way through to whatever the platform provides. */
+  --font-symbol:     ui-monospace, "Courier New", monospace;
   --tracking-display: 0.05em;
   --tracking-wide:   0.14em;
   --leading-body:    1.6;
@@ -470,15 +492,33 @@ thead tr.cols th.team-h { text-align: left; padding-left: var(--u2); }
    first row is the colspan'd group band. Unlisted columns split what is left
    evenly. Courier Prime is a monospace and far wider than the condensed sans
    this board used to run, so team needs materially more room than 19%. */
-col.col-rank   { width: 4.5%; }
-col.col-team   { width: 14%; }
-col.col-points { width: 7%; }
+/* Column widths, measured rather than guessed: each is the widest of its
+   header lines and its cell values at the current type sizes, plus headroom.
+   Re-derive them if the type sizes change — the table runs close to full.
 
-/* Individual columns, by sheet label. The two POTENTIAL headers are the widest
-   words on the board and cannot wrap, so they get the slack that TEAM NAME was
-   not using. Anything unlisted splits what remains evenly. */
-col.col--potential      { width: 8.5%; }
-col.col--real-potential { width: 9.5%; }
+   col-plain is the DEFAULT for any column the sheet grows; the per-label rules
+   below override it and must come after it, since both are single-class
+   selectors on <col> and source order decides. Without that default a new
+   sheet column would collapse to nothing. */
+col.col-plain  { width: 6.0%; }
+
+col.col-rank   { width: 5.3%; }
+col.col-team   { width: 12.0%; }   /* Oswald is condensed — 31px of headroom */
+col.col-points { width: 6.4%; }
+
+/* "#" holds a one or two digit value under a one-character header, so it gives
+   its share to RECORD, whose "0 - 0" was crowding both the group divider and
+   the Costume column. */
+col.col--num                   { width: 3.0%; }
+
+/* Wide labels and wide values. POTENTIAL is the longest unwrappable word on
+   the board; "Costume" is the widest single-line header in Koloss. */
+col.col--record                { width: 9.5%; }
+col.col--bonus-costume         { width: 8.0%; }
+col.col--double                { width: 6.9%; }
+col.col--potential-double-used { width: 6.9%; }
+col.col--potential             { width: 9.0%; }
+col.col--real-potential        { width: 9.0%; }
 
 tbody td {
   padding: clamp(3px, 0.8vh, 20px) var(--u2);
@@ -498,15 +538,17 @@ tbody td.team {
   text-overflow: ellipsis;
   font-size: var(--fs-team);
 }
+/* Values, not headers — these stay on the body face. Koloss's counters close
+   up almost completely at these sizes: its zero renders as a solid blob. */
 tbody td.rank {
   color: var(--primary);
-  font-family: var(--font-display);
-  font-weight: 800;
+  font-family: var(--font-body);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 tbody td.points {
-  font-family: var(--font-display);
-  font-weight: 800;
+  font-family: var(--font-body);
+  font-weight: 700;
   font-size: var(--fs-points);
   font-variant-numeric: tabular-nums;
 }
@@ -530,6 +572,7 @@ tbody td.tie {
 /* Rank-1 row is deliberately styled the same as every other row. */
 
 .check {
+  font-family: var(--font-symbol);
   font-size: var(--fs-check);
   line-height: 1;
   display: inline-block;

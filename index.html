@@ -13,7 +13,7 @@
 <title>Jambo Leaderboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Yellowtail&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Yellowtail&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="design-system/wpa.css">
 </head>
 <body>
@@ -408,7 +408,10 @@ function renderTable(model) {
 /* Header label -> css class suffix, so wpa.css can size an individual column
    by name (e.g. col--real-potential) instead of only by kind. */
 function slugify(label) {
-  return norm(label).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return norm(label)
+    .replace(/#/g, "num")            // a bare "#" would otherwise slug to nothing
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "sym";
 }
 
 function escapeHtml(s) {

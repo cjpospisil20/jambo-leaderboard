@@ -25,13 +25,35 @@ so the two cannot drift. There is no build step and no dependencies.
 ## Consuming it
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Yellowtail&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Yellowtail&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="design-system/wpa.css">
 ```
 
-Three faces: **Yellowtail** for the wordmark only (`--font-script`), **National Park**
-self-hosted for all display type (`--font-display`), **Courier Prime** for body and
-score columns (`--font-body`).
+Four faces, each with one job:
+
+| Token | Face | Where | Source |
+|---|---|---|---|
+| `--font-script` | Yellowtail | The wordmark, nothing else | Google Fonts |
+| `--font-display` | **Koloss** | Group band and column headers only | self-hosted, `fonts/koloss-regular.ttf` |
+| `--font-body` | Oswald | Every value on the board, plus the status chip | Google Fonts |
+| `--font-symbol` | platform mono | The ☐/☑ tick column | system |
+
+**Koloss** is Jakob Erbar's 1923 design, digitised by Dieter Steffmann in 1999,
+self-hosted from [1001Fonts](https://www.1001fonts.com/koloss-font.html) under their
+[Free For Commercial Use licence](https://www.1001fonts.com/licenses/ffc.html), which
+explicitly permits `@font-face` embedding and format conversion. TTF is the only format
+published; the licence enumerates WOFF/SVG/EOT but predates WOFF2, so the original file
+is served unconverted (22.6 KB).
+
+Two things about it that are load-bearing:
+
+- **It has no ballot-box glyphs** (U+2610/2611), which is why `--font-symbol` exists.
+- **Its counters close up almost completely at value sizes** — the zero renders as a
+  solid blob. It is a headline face only. `td.rank` and `td.points` deliberately use
+  `--font-body`, not `--font-display`, for this reason.
+
+National Park is still self-hosted and sits behind Koloss in the `--font-display` stack,
+so a failed Koloss load degrades to the previous look rather than to Georgia.
 
 `body` takes `--page-ground` (sky), not `--background`. The **board is the paper** —
 cards, badges and the board itself take `--background`. This split exists because the
@@ -104,6 +126,15 @@ points tie keeps its own dark green (`--highlight`) rather than becoming a gold 
 - **Column widths live in `<col>` rules**, not on cells. `table-layout: fixed`
   takes widths from the first row, and the first row is the `colspan`'d group
   band, so per-cell widths are ignored and every column comes out equal.
+  Each `<col>` carries both its kind (`col-team`) and a slug of its sheet label
+  (`col--real-potential`), so any single column can be sized by name. The widths
+  are **measured, not guessed** — each is the widest of its header lines and its
+  cell values at the current type sizes, plus headroom. Re-derive them if the
+  type sizes change; the table runs close to full. `col.col-plain` is the default
+  a new sheet column inherits, and the per-label rules must stay after it, since
+  both are single-class selectors and source order decides.
+- **Column headers cap at about 15.5px** at 1512×743. Above that "Costume" — the
+  widest single-line header in Koloss — clips. That is a limit, not a preference.
 - **The zebra rule is `td:not(.tie)`** so the tie highlight wins without
   `!important`. Do not "simplify" it back to a plain `td`.
 - The table is string-built in JS and re-rendered every 30s; class names there

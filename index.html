@@ -35,6 +35,8 @@
 
   html, body {
     margin: 0;
+    height: 100%;
+    overflow: hidden;
     background: #7f9fb8;
     color: var(--ink);
     -webkit-font-smoothing: antialiased;
@@ -47,8 +49,12 @@
     position: relative;
     z-index: 2;
     max-width: 100%;
+    height: 100vh;
     margin: 0 auto;
-    padding: 40px clamp(28px, 7vw, 240px) 80px;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(8px, 1.5vh, 20px) clamp(12px, 2vw, 48px);
+    gap: clamp(4px, 1vh, 12px);
   }
 
   .scene {
@@ -77,14 +83,15 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    gap: 14px;
+    gap: clamp(2px, 0.6vh, 8px);
     flex-wrap: wrap;
-    margin-bottom: 22px;
+    flex: 0 0 auto;
+    margin-bottom: 0;
   }
   .brand h1 {
     margin: 0;
     font-family: var(--script);
-    font-size: clamp(62px, 11vw, 138px);
+    font-size: clamp(30px, 6.5vh, 104px);
     font-weight: 400;
     letter-spacing: 0.01em;
     line-height: 0.95;
@@ -93,8 +100,8 @@
   }
   .brand h1 span { color: #fbe67b; }
   .brand p {
-    margin: 8px 0 0;
-    font-size: 15px;
+    margin: 0;
+    font-size: clamp(11px, 1vw, 22px);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -111,7 +118,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: clamp(11px, 1vw, 22px);
     font-weight: 600;
     color: var(--ink-soft);
     white-space: nowrap;
@@ -144,26 +151,28 @@
     border-radius: 0;
     overflow: hidden;
     box-shadow: 6px 6px 0 rgba(23,24,15,0.28);
+    flex: 1 1 auto;
+    min-height: 0;
   }
-  .scroll { overflow-x: auto; }
+  .scroll { overflow: hidden; height: 100%; }
 
   table {
     width: 100%;
+    height: 100%;
     border-collapse: collapse;
-    font-size: 14px;
     min-width: 0;
-    table-layout: auto;
+    table-layout: fixed;
   }
 
   thead tr.group th {
     background: #f4ead0;
     color: var(--olive);
     font-family: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-    font-size: 15px;
+    font-size: clamp(12px, 1.3vw, 30px);
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    padding: 9px 10px;
+    padding: clamp(4px, 0.7vh, 10px) 6px;
     border-bottom: 3px solid var(--outline);
     text-align: center;
     -webkit-text-stroke: 0.4px var(--outline);
@@ -175,13 +184,14 @@
     background: var(--olive);
     color: #fff2ab;
     font-family: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-    font-size: 16px;
+    font-size: clamp(11px, 1.2vw, 28px);
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
+    line-height: 1.05;
     text-transform: uppercase;
-    padding: 11px 10px;
+    padding: clamp(5px, 0.8vh, 12px) 6px;
     text-align: center;
-    white-space: nowrap;
+    white-space: normal;
     position: sticky;
     top: 0;
     -webkit-text-stroke: 0.4px var(--outline);
@@ -190,11 +200,12 @@
   thead tr.cols th.team-h { text-align: left; }
 
   tbody td {
-    padding: 12px 10px;
+    padding: clamp(3px, 1.15vh, 24px) 6px;
     text-align: center;
     border-bottom: 1.5px solid var(--line);
     white-space: nowrap;
     font-weight: 400;
+    font-size: clamp(13px, 1.5vw, 34px);
     -webkit-text-stroke: 0.3px var(--outline);
     paint-order: stroke fill;
   }
@@ -203,9 +214,13 @@
     text-align: left;
     font-weight: 400;
     color: var(--ink);
+    white-space: nowrap;
+    font-size: clamp(12px, 1.3vw, 30px);
+    width: 19%;
   }
-  tbody td.rank { font-weight: 400; color: var(--olive); width: 46px; }
-  tbody td.points { font-weight: 400; font-size: 16px; }
+  thead tr.cols th.team-h { width: 19%; }
+  tbody td.rank { font-weight: 400; color: var(--olive); width: 4%; }
+  tbody td.points { font-weight: 400; font-size: clamp(15px, 1.7vw, 38px); width: 6%; }
   tbody td.muted { color: var(--ink-soft); -webkit-text-stroke: 0.3px var(--outline); }
 
   /* group dividers */
@@ -216,16 +231,21 @@
 
   /* leader row intentionally styled the same as the other odd rows */
 
-  /* points tie: highlight team name + points cells (light green) */
-  tbody td.tie { background: #c7e9b0 !important; }
+  /* points tie: highlight team name + points cells (dark green, white text) */
+  tbody td.tie {
+    background: #567233 !important;
+    color: #fff !important;
+    -webkit-text-stroke: 0 !important;
+  }
 
-  .check { font-size: 34px; line-height: 1; display: inline-block; -webkit-text-stroke: 0; color: #111; }
+  .check { font-size: clamp(20px, 2vw, 44px); line-height: 1; display: inline-block; -webkit-text-stroke: 0; color: #111; }
   .check.on  { color: #111; }
   .check.off { color: #111; }
 
   .footnote {
-    margin-top: 18px;
-    font-size: 13px;
+    margin: 0;
+    flex: 0 0 auto;
+    font-size: clamp(11px, 1vw, 22px);
     color: var(--ink);
     letter-spacing: 0.04em;
     text-align: center;
@@ -423,7 +443,9 @@ function renderTable(model) {
   const colCells = cols.map((col, i) => {
     const divide = (i > 0 && col.group !== cols[i - 1].group) ? " divide" : "";
     const teamH = col.kind === "team" ? " team-h" : "";
-    return '<th class="' + teamH + divide + '">' + escapeHtml(col.label) + '</th>';
+    // stack multi-word headers onto separate lines to keep columns narrow
+    const stacked = col.label.split(/\s+/).map(escapeHtml).join("<br>");
+    return '<th class="' + teamH + divide + '">' + stacked + '</th>';
   }).join("");
 
   const rankCol   = cols.find(c => c.kind === "rank");

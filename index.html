@@ -1,299 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- data-scene picks the background illustration: "wpa" | "classic" | "none".
+     "classic" is the original pre-theme scene, preserved verbatim below, so
+     reverting the background is a one-word edit. "none" gives flat cream paper. -->
+<html lang="en" data-scene="wpa">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2D4A43">
 <title>Jambo Leaderboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Yellowtail&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --cream:      #fff0a2;
-    --cream-deep: #f3d84a;
-    --olive:      #4a6c9b;
-    --olive-deep: #375581;
-    --olive-wash: #e4ebf4;
-    --sky:        #afc0d3;
-    --sky-wash:   #afc0d3;
-    --ink:        #22231a;
-    --ink-soft:   #6b6a56;
-    --outline:    #17180f;
-    --line:       rgba(23,24,15,0.55);
-    --line-heavy: #17180f;
-    --script:     "Yellowtail", "Brush Script MT", cursive;
-    font-family: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-  }
-
-  /* vintage travel-poster caps: heavy, tight, dark outline via stroke behind fill */
-  .poster-outline {
-    -webkit-text-stroke: 0.6px var(--outline);
-    paint-order: stroke fill;
-  }
-
-  * { box-sizing: border-box; }
-
-  html, body {
-    margin: 0;
-    height: 100%;
-    overflow: hidden;
-    background: #7f9fb8;
-    color: var(--ink);
-    -webkit-font-smoothing: antialiased;
-    text-transform: uppercase;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-  }
-
-  .page {
-    position: relative;
-    z-index: 2;
-    max-width: 100%;
-    height: 100vh;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    padding: clamp(8px, 1.5vh, 20px) clamp(12px, 2vw, 48px);
-    gap: clamp(4px, 1vh, 12px);
-  }
-
-  .scene {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-  }
-  .scene svg { width: 100%; height: 100%; display: block; }
-
-  .poster-frame {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    border: clamp(14px, 1.7vw, 30px) solid #e8dbb4;
-    box-shadow: inset 0 0 0 2px rgba(23,24,15,0.72);
-  }
-
-  /* ---------- masthead ---------- */
-  .masthead {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: clamp(2px, 0.6vh, 8px);
-    flex-wrap: wrap;
-    flex: 0 0 auto;
-    margin-bottom: 0;
-  }
-  .brand h1 {
-    margin: 0;
-    font-family: var(--script);
-    font-size: clamp(38px, 10.5vh, 180px);
-    font-weight: 400;
-    letter-spacing: 0.01em;
-    line-height: 0.95;
-    text-transform: none;
-    color: #fbe67b;
-  }
-  .brand h1 span { color: #fbe67b; }
-  .brand p {
-    margin: 0;
-    font-size: clamp(11px, 1vw, 22px);
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink);
-    -webkit-text-stroke: 0.5px var(--outline);
-    paint-order: stroke fill;
-  }
-  .controls {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .status {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: clamp(11px, 1vw, 22px);
-    font-weight: 600;
-    color: var(--ink);
-    white-space: nowrap;
-  }
-  .status .dot {
-    width: 9px; height: 9px;
-    border-radius: 0;
-    background: var(--olive);
-  }
-  .status .dot.live  { background: #3f7d4f; }
-  .status .dot.error { background: #c07a2b; }
-  .badge-demo {
-    display: inline-flex;
-    align-items: center;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--outline);
-    background: var(--cream-deep);
-    border: 2px solid var(--outline);
-    padding: 6px 13px;
-    border-radius: 0;
-  }
-
-  /* ---------- board ---------- */
-  .board {
-    background: #f4ead0;
-    border: 3px solid var(--outline);
-    border-radius: 0;
-    overflow: hidden;
-    box-shadow: 6px 6px 0 rgba(23,24,15,0.28);
-    flex: 0 0 auto;
-    min-height: 0;
-  }
-  .scroll { overflow: hidden; height: 100%; }
-
-  table {
-    width: 100%;
-    height: auto;
-    border-collapse: collapse;
-    min-width: 0;
-    table-layout: fixed;
-  }
-
-  thead tr.group th {
-    background: #f4ead0;
-    color: var(--olive);
-    font-family: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-    font-size: clamp(12px, 1.3vw, 30px);
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: clamp(4px, 0.7vh, 10px) 6px;
-    border-bottom: 3px solid var(--outline);
-    text-align: center;
-    -webkit-text-stroke: 0.4px var(--outline);
-    paint-order: stroke fill;
-  }
-  thead tr.group th.spacer { background: #f4ead0; -webkit-text-stroke: 0; }
-
-  thead tr.cols th {
-    background: var(--olive);
-    color: #fff2ab;
-    font-family: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-    font-size: clamp(11px, 1.2vw, 28px);
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    line-height: 1.05;
-    text-transform: uppercase;
-    padding: clamp(5px, 0.8vh, 12px) 6px;
-    text-align: center;
-    white-space: normal;
-    position: sticky;
-    top: 0;
-    -webkit-text-stroke: 0.4px var(--outline);
-    paint-order: stroke fill;
-  }
-  thead tr.cols th.team-h { text-align: left; }
-
-  tbody td {
-    padding: clamp(3px, 1.15vh, 24px) 6px;
-    text-align: center;
-    border-bottom: 1.5px solid var(--line);
-    white-space: nowrap;
-    font-weight: 400;
-    font-size: clamp(13px, 1.5vw, 34px);
-    -webkit-text-stroke: 0.3px var(--outline);
-    paint-order: stroke fill;
-  }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody td.team {
-    text-align: left;
-    font-weight: 400;
-    color: var(--ink);
-    white-space: nowrap;
-    font-size: clamp(12px, 1.3vw, 30px);
-    width: 19%;
-  }
-  thead tr.cols th.team-h { width: 19%; }
-  tbody td.rank { font-weight: 400; color: var(--olive); width: 4%; }
-  tbody td.points { font-weight: 400; font-size: clamp(15px, 1.7vw, 38px); width: 6%; }
-  tbody td.muted { color: var(--ink-soft); -webkit-text-stroke: 0.3px var(--outline); }
-
-  /* group dividers */
-  td.divide, th.divide { border-left: 3px solid var(--outline); }
-
-  /* alternating wash */
-  tbody tr:nth-child(even) td { background: var(--sky-wash); }
-
-  /* leader row intentionally styled the same as the other odd rows */
-
-  /* points tie: highlight team name + points cells (dark green, white text) */
-  tbody td.tie {
-    background: #567233 !important;
-    color: #fff !important;
-    -webkit-text-stroke: 0 !important;
-  }
-
-  .check { font-size: clamp(20px, 2vw, 44px); line-height: 1; display: inline-block; -webkit-text-stroke: 0; color: #111; }
-  .check.on  { color: #111; }
-  .check.off { color: #111; }
-
-  .footnote {
-    margin: 0;
-    flex: 0 0 auto;
-    font-size: clamp(11px, 1vw, 22px);
-    color: var(--ink);
-    letter-spacing: 0.04em;
-    text-align: center;
-    -webkit-text-stroke: 0.4px var(--outline);
-    paint-order: stroke fill;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { animation: none !important; transition: none !important; }
-  }
-  /* ---------- mobile / touch: allow scrolling, readable fonts ---------- */
-  /* Big monitors driven by a computer keep the locked one-screen layout above;
-     phones/tablets (touch) or narrow windows fall through to this. */
-  @media (pointer: coarse), (max-width: 819px) {
-    html, body { overflow: auto; height: auto; }
-    .page {
-      display: block;
-      height: auto;
-      padding: 16px;
-      gap: 0;
-    }
-    .masthead { margin-bottom: 14px; }
-    .brand h1 { font-size: clamp(34px, 12vw, 64px); }
-    .controls { width: 100%; justify-content: center; }
-
-    .board { flex: none; }
-    .scroll { overflow-x: auto; overflow-y: visible; height: auto; -webkit-overflow-scrolling: touch; }
-
-    table { table-layout: auto; width: auto; min-width: 720px; height: auto; }
-
-    thead tr.group th { font-size: 13px; padding: 8px 8px; }
-    thead tr.cols th  { font-size: 13px; padding: 9px 8px; }
-    tbody td {
-      font-size: 16px;
-      padding: 10px 8px;
-      white-space: nowrap;
-    }
-    tbody td.team   { font-size: 15px; width: auto; }
-    thead tr.cols th.team-h { width: auto; }
-    tbody td.rank   { width: auto; }
-    tbody td.points { font-size: 18px; width: auto; }
-    .check { font-size: 24px; }
-    .footnote { font-size: 13px; margin-top: 14px; }
-  }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="design-system/wpa.css">
 </head>
 <body>
-<div class="scene" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+
+<!-- ── WPA scene ────────────────────────────────────────────────────────────
+     Flat 1930s park-poster composition. Every fill is a design token, so the
+     illustration recolors with the system. No gradients, no filters, no
+     opacity fades — hard-edged shapes only.
+     Anchored xMidYMax so the ridges stay pinned to the bottom edge, where
+     they show in the gap beneath the board. ──────────────────────────────── -->
+<div class="scene" data-name="wpa" aria-hidden="true"><svg viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shallow viewBox on purpose. On the locked desktop layout the board covers
+       almost the whole viewport, so a full-bleed illustration would be invisible.
+       This composition is sized as a band along the bottom edge instead (see
+       .scene[data-name="wpa"] svg in wpa.css), where it reads in the side
+       margins and in the strip beneath the board. -->
+
+  <!-- banded sun -->
+  <!-- Sits low so the ridges occlude its lower half, and so it falls inside the
+       visible slice of the band rather than above it. -->
+  <circle cx="1196" cy="138" r="46" fill="var(--accent)" stroke="var(--text-primary)" stroke-width="4"/>
+  <rect x="1154" y="122" width="84" height="6" fill="var(--background)"/>
+  <rect x="1154" y="142" width="84" height="6" fill="var(--background)"/>
+
+  <!-- three ridge lines, back to front: sage, rust, forest -->
+  <path fill="var(--text-muted)" d="M0 152 L120 104 L232 142 L360 88 L494 140 L620 100 L760 146 L892 96 L1024 138 L1160 102 L1290 140 L1440 108 L1440 300 L0 300 Z"/>
+  <path fill="var(--secondary)" d="M0 196 L150 158 L286 190 L420 150 L560 186 L700 154 L842 192 L980 156 L1116 190 L1258 158 L1380 188 L1440 170 L1440 300 L0 300 Z"/>
+  <path fill="var(--primary)"   d="M0 236 L170 204 L322 234 L472 200 L628 232 L780 202 L934 236 L1086 204 L1238 234 L1370 208 L1440 226 L1440 300 L0 300 Z"/>
+
+  <!-- conifer treeline, silhouetted on the forest ridge -->
+  <g fill="var(--text-primary)">
+    <path d="M52 238 L74 300 L30 300 Z"/>
+    <path d="M118 252 L136 300 L100 300 Z"/>
+    <path d="M188 230 L214 300 L162 300 Z"/>
+    <path d="M262 250 L280 300 L244 300 Z"/>
+    <path d="M336 234 L360 300 L312 300 Z"/>
+    <path d="M414 254 L430 300 L398 300 Z"/>
+    <path d="M486 226 L512 300 L460 300 Z"/>
+    <path d="M566 248 L584 300 L548 300 Z"/>
+    <path d="M642 236 L666 300 L618 300 Z"/>
+    <path d="M722 254 L738 300 L706 300 Z"/>
+    <path d="M796 228 L822 300 L770 300 Z"/>
+    <path d="M876 250 L894 300 L858 300 Z"/>
+    <path d="M950 238 L974 300 L926 300 Z"/>
+    <path d="M1030 254 L1046 300 L1014 300 Z"/>
+    <path d="M1104 230 L1130 300 L1078 300 Z"/>
+    <path d="M1184 250 L1202 300 L1166 300 Z"/>
+    <path d="M1258 236 L1282 300 L1234 300 Z"/>
+    <path d="M1338 252 L1356 300 L1320 300 Z"/>
+    <path d="M1408 232 L1434 300 L1382 300 Z"/>
+  </g>
+</svg></div>
+
+<!-- ── classic scene ────────────────────────────────────────────────────────
+     The pre-theme background, kept byte-for-byte as the rollback path.
+     It carries its own hardcoded colors, gradients and grain filter by
+     design — do not "fix" it to match the token system. Show it by setting
+     data-scene="classic" on <html> above. ───────────────────────────────── -->
+<div class="scene" data-name="classic" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#47688c"/><stop offset="0.5" stop-color="#7f9fb8"/><stop offset="0.8" stop-color="#bccfd4"/><stop offset="1" stop-color="#f2cf86"/></linearGradient>
     <linearGradient id="wat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4c7f9c"/><stop offset="1" stop-color="#264c62"/></linearGradient>
@@ -341,9 +117,12 @@
   <rect x="0" y="0" width="1440" height="900" filter="url(#grain)" opacity="0.07"/>
 </svg></div>
 
+<!-- printed trim line, sits above the scene and the page -->
+<div class="poster-frame" aria-hidden="true"></div>
+
 <div class="page">
 
-  <header class="masthead">
+  <header class="masthead band">
     <div class="brand">
       <h1>Jambo <span>Leaderboard</span></h1>
       <p>Live scores</p>
@@ -356,7 +135,7 @@
     </div>
   </header>
 
-  <div class="board">
+  <div class="board unigrid">
     <div class="scroll"><div id="mount"></div></div>
   </div>
 
@@ -534,8 +313,17 @@ function renderTable(model) {
     return '<tr class="' + (isLeader ? "leader" : "") + '">' + tds + '</tr>';
   }).join("");
 
+  /* <colgroup> is what actually sizes the columns. table-layout:fixed reads
+     widths from the first row, and our first row is the colspan'd group band,
+     so per-cell widths there are ignored and every column comes out equal.
+     The widths themselves live in design-system/wpa.css, not here. */
+  const colGroup = '<colgroup>' +
+    cols.map(col => '<col class="col-' + col.kind + '">').join("") +
+    '</colgroup>';
+
   return '' +
     '<table>' +
+      colGroup +
       '<thead>' +
         '<tr class="group">' + groupCells + '</tr>' +
         '<tr class="cols">' + colCells + '</tr>' +
@@ -589,7 +377,7 @@ async function load() {
     // keep the last good board on screen; only show a message if we have nothing yet
     if (!hasRendered) {
       mount.innerHTML =
-        '<p style="padding:24px 16px;text-align:center;">' +
+        '<p class="board-error">' +
         'Couldn’t reach the sheet — retrying…</p>';
     }
     setStatus("error", "Reconnecting…");

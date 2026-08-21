@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" data-doc>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2D4A43">
+<title>WPA-National-Park-Vintage — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="wpa.css">
+<style>
+  /* Styleguide chrome only. Nothing here is part of the system —
+     every component below is styled entirely by wpa.css. */
+  .ds { max-width: 1100px; margin: 0 auto; padding: var(--u8) var(--u6) var(--u12); }
+  .ds section { margin-top: var(--u12); }
+  .ds h2 {
+    font-family: var(--font-display); font-weight: 800; text-transform: uppercase;
+    letter-spacing: var(--tracking-display); font-size: 1.5rem;
+    margin: 0 0 var(--u2); padding-bottom: var(--u2);
+    border-bottom: var(--border-w-heavy) solid var(--border);
+  }
+  .ds p.note { color: var(--text-muted); margin: 0 0 var(--u4); max-width: 62ch; }
+  .row { display: flex; flex-wrap: wrap; gap: var(--u4); align-items: center; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: var(--u4); }
+  .sw { border: var(--border-w) solid var(--border); }
+  .sw i { display: block; height: 74px; border-bottom: var(--border-w) solid var(--border); }
+  .sw b, .sw code { display: block; padding: 0 var(--u2); font-size: 0.75rem; }
+  .sw b { padding-top: var(--u2); font-family: var(--font-display); font-weight: 800;
+          text-transform: uppercase; letter-spacing: var(--tracking-display); }
+  .sw code { padding-bottom: var(--u2); color: var(--text-muted); }
+  table.ct { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  table.ct th, table.ct td { border: var(--border-w) solid var(--border); padding: var(--u2); text-align: left; }
+  table.ct th { background: var(--primary); color: var(--on-primary);
+                font-family: var(--font-display); font-weight: 800;
+                text-transform: uppercase; letter-spacing: var(--tracking-display); }
+  .specimen { font-family: var(--font-display); font-weight: 800; text-transform: uppercase;
+              letter-spacing: var(--tracking-display); line-height: 0.95; margin: 0 0 var(--u2); }
+  .banned { color: var(--secondary); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="ds">
+
+  <header class="masthead band" style="align-items:flex-start;text-align:left">
+    <h1 class="band__title" style="font-size:clamp(30px,5vw,64px)">WPA · National Park · Vintage</h1>
+    <p class="band__lede">Design system — Jambo Leaderboard</p>
+  </header>
+
+  <section>
+    <h2>Palette</h2>
+    <p class="note">Eight tokens, no tints or shades. Everything in the system is built from these.</p>
+    <div class="swatches">
+      <div class="sw"><i style="background:var(--background)"></i><b>Background</b><code>#F4EBD4 · aged cream</code></div>
+      <div class="sw"><i style="background:var(--surface)"></i><b>Surface</b><code>#EADCC1 · card tan</code></div>
+      <div class="sw"><i style="background:var(--primary)"></i><b>Primary</b><code>#2D4A43 · forest green</code></div>
+      <div class="sw"><i style="background:var(--secondary)"></i><b>Secondary</b><code>#D96B43 · rust</code></div>
+      <div class="sw"><i style="background:var(--accent)"></i><b>Accent</b><code>#EBB15B · mustard</code></div>
+      <div class="sw"><i style="background:var(--text-primary)"></i><b>Text primary</b><code>#1E2926 · charcoal pine</code></div>
+      <div class="sw"><i style="background:var(--text-muted)"></i><b>Text muted</b><code>#5C6B64 · sage shadow</code></div>
+      <div class="sw"><i style="background:var(--border)"></i><b>Border</b><code>#2D4A43 · outline</code></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Contrast rules</h2>
+    <p class="note">Two of these colors cannot legally carry text on cream. That constraint drives
+       several decisions in the system — notably why the tie highlight is charcoal on mustard
+       rather than the reverse.</p>
+    <table class="ct">
+      <tr><th>Pair</th><th>Ratio</th><th>Rule</th></tr>
+      <tr><td>text-primary on background</td><td>12.6:1</td><td>Default body text</td></tr>
+      <tr><td>text-primary on surface</td><td>11.1:1</td><td>Text on tan cards and zebra rows</td></tr>
+      <tr><td>background on primary</td><td>8.1:1</td><td>Cream on the green band</td></tr>
+      <tr><td>text-primary on accent</td><td>7.8:1</td><td>The highlight pattern</td></tr>
+      <tr><td>text-primary on secondary</td><td>4.4:1</td><td>Charcoal on rust</td></tr>
+      <tr><td>text-muted on background</td><td>4.7:1</td><td>Muted cells only — just passes AA</td></tr>
+      <tr><td class="banned">secondary on background</td><td class="banned">2.9:1</td><td class="banned">Rules, fills and borders only. Never text.</td></tr>
+      <tr><td class="banned">accent on background</td><td class="banned">1.6:1</td><td class="banned">Fill only. Never text.</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Typography</h2>
+    <p class="note">Display is National Park, self-hosted at 400/700/800. Body is Courier Prime.
+       Display type is always uppercase and always solid heavy weight — never outlined.</p>
+    <p class="specimen" style="font-size:3rem">Sedona Ridge</p>
+    <p class="specimen" style="font-size:1.75rem;font-weight:700">Ranger Station 700</p>
+    <p class="specimen" style="font-size:1.1rem;font-weight:400">Trailhead 400 · ABCDEFGHIJKLM · 0123456789</p>
+    <hr class="rule--accent" style="margin:var(--u4) 0">
+    <p style="margin:0">Body copy is Courier Prime at 1.6 line-height. Monospace keeps the score
+       columns aligned without tabular-figure tricks, and it carries the field-notes register the
+       poster era actually used on signage and permits.</p>
+  </section>
+
+  <section>
+    <h2>Buttons</h2>
+    <p class="note">Thick outline, zero radius, flat offset block shadow. On hover the block presses
+       <em>into</em> its own shadow — it does not lift, glow or ease.</p>
+    <div class="row">
+      <button class="btn btn--primary">Primary action</button>
+      <button class="btn btn--secondary">Secondary</button>
+      <button class="btn">Default</button>
+      <button class="btn btn--ghost">Ghost</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Badges &amp; status</h2>
+    <div class="row">
+      <span class="badge">Bonus</span>
+      <span class="badge badge--green">Standings</span>
+      <span class="badge badge--rust">Skunked</span>
+      <span class="badge badge--paper">Potential</span>
+      <span class="status"><span class="dot live"></span>Live</span>
+      <span class="status"><span class="dot error"></span>Retrying</span>
+      <span class="status"><span class="dot"></span>Idle</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Unigrid card</h2>
+    <p class="note">Boxy container with prominent vertical rules between columns, after the
+       National Park Service brochure grid. Rules are 3px, never hairlines.</p>
+    <div class="unigrid unigrid--grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="unigrid__cell">
+        <h3>Elevation</h3>
+        <p style="margin:0">Boxy layouts with prominent vertical lines, mimicking classic park
+           brochures and maps.</p>
+      </div>
+      <div class="unigrid__cell">
+        <h3>Season</h3>
+        <p style="margin:0">Zero border radius throughout. The printed look depends on corners
+           staying sharp.</p>
+      </div>
+      <div class="unigrid__cell">
+        <h3>Access</h3>
+        <p style="margin:0">Flat offset block shadow, four pixels down and right, in the primary
+           green. Never blurred.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Band header</h2>
+    <p class="note">Deep forest green ground, cream display type, one rust accent rule beneath.
+       The rule is an inset shadow so it sits inside the outline.</p>
+    <header class="band" style="padding:var(--u5) var(--u6) calc(var(--u5) + 4px)">
+      <p class="band__title" style="font-size:2.25rem">Jambo Leaderboard</p>
+      <p class="band__lede">Live scores</p>
+    </header>
+  </section>
+
+  <section>
+    <h2>Data grid</h2>
+    <p class="note">The leaderboard table. Green group band, tan column labels, tan zebra, 3px
+       Unigrid verticals at group boundaries. The mustard cells are the points-tie highlight.</p>
+    <div class="unigrid">
+      <table>
+        <colgroup><col class="col-rank"><col class="col-team"><col class="col-points"><col><col></colgroup>
+        <thead>
+          <tr class="group"><th class="group-band" colspan="3">Standings</th><th class="spacer divide" colspan="2">Bonus</th></tr>
+          <tr class="cols"><th>Rank</th><th class="team-h">Team<br>name</th><th>Points</th><th class="divide">Costume</th><th>Double</th></tr>
+        </thead>
+        <tbody>
+          <tr class="leader"><td class="rank">1</td><td class="team">CJ + Jack E</td><td class="points">22</td><td class="divide">3</td><td><span class="check on">&#9745;</span></td></tr>
+          <tr><td class="rank">2</td><td class="team tie">Matt + Tom B</td><td class="points tie">18</td><td class="divide">1</td><td><span class="check off">&#9744;</span></td></tr>
+          <tr><td class="rank">2</td><td class="team tie">Zinger + Henry</td><td class="points tie">18</td><td class="divide muted">&mdash;</td><td><span class="check off">&#9744;</span></td></tr>
+          <tr><td class="rank">4</td><td class="team">Sam + Mo</td><td class="points">11</td><td class="divide">2</td><td><span class="check on">&#9745;</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Banned</h2>
+    <p class="note">These are not stylistic preferences, they are what separates this system from
+       generic modern UI. Anything on this list is a defect:</p>
+    <ul>
+      <li><span class="banned">Pill shapes</span> or any non-zero <code>border-radius</code></li>
+      <li><span class="banned">Gradients</span> of any kind, linear or radial</li>
+      <li><span class="banned">Blur</span> — <code>filter: blur()</code>, <code>backdrop-filter</code>, soft drop shadows</li>
+      <li><span class="banned">Alpha-soft shadows</span> — shadows are opaque offset blocks</li>
+      <li><span class="banned">Eased transitions</span> on interactive state</li>
+      <li><span class="banned">Outlined display type</span> — <code>-webkit-text-stroke</code> and friends</li>
+      <li><span class="banned">Opacity</span> as a way to express a muted state — use <code>--text-muted</code></li>
+    </ul>
+  </section>
+
+</div>
+</body>
+</html>

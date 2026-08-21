@@ -1,0 +1,591 @@
+/* ============================================================================
+   WPA-National-Park-Vintage
+   A design system for printed-badge UI: 1930s–1970s National Park Service
+   "Unigrid" layout rules, WPA poster color, flat offset block shadows.
+
+   This file is the single source of truth. index.html and design-system/
+   index.html (the styleguide) both link it, so they cannot drift.
+
+   HOUSE RULES — do not break these:
+     - border-radius is 0. Always. No pills, no soft corners.
+     - No gradients, no blur(), no backdrop-filter.
+     - Shadows are flat offset blocks only. Never soft, never colored-alpha.
+     - Interactive state changes are instant. Printed objects do not ease.
+     - Display type is solid heavy weight, never outlined/stroked.
+   ========================================================================== */
+
+/* ---------- 1. Self-hosted display face --------------------------------- */
+/* National Park, latin subset, from @fontsource/national-park@5.3.0.
+   Self-hosted so the board never depends on a font CDN being reachable. */
+@font-face {
+  font-family: "National Park";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/national-park-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "National Park";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./fonts/national-park-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "National Park";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("./fonts/national-park-latin-800-normal.woff2") format("woff2");
+}
+
+/* ---------- 2. Token layer ---------------------------------------------- */
+:root {
+  /* palette */
+  --background:      #F4EBD4;  /* aged cream / paper */
+  --surface:         #EADCC1;  /* light card tan */
+  --primary:         #2D4A43;  /* deep forest green */
+  --secondary:       #D96B43;  /* rust / Sedona orange */
+  --accent:          #EBB15B;  /* mustard yellow */
+  --text-primary:    #1E2926;  /* charcoal pine */
+  --text-muted:      #5C6B64;  /* sage shadow */
+  --border:          #2D4A43;  /* strong outline */
+
+  /* derived pairings — see the contrast table in README.md.
+     --secondary and --accent NEVER carry text on cream. */
+  --on-primary:      var(--background);   /* cream on green   —  8.1:1 */
+  --on-secondary:    var(--text-primary); /* charcoal on rust —  4.4:1 */
+  --on-accent:       var(--text-primary); /* charcoal on gold —  7.8:1 */
+
+  /* borders — sharp, printed */
+  --border-w:        2px;
+  --border-w-heavy:  3px;
+  --rule-accent-w:   4px;
+  --radius:          0px;
+
+  /* shadows — flat offset blocks only */
+  --shadow-retro:    4px 4px 0px 0px var(--primary);
+  --shadow-press:    0px 0px 0px 0px var(--primary);
+
+  /* type */
+  --font-display:    "National Park", "Volkhov", Georgia, serif;
+  --font-body:       "Courier Prime", "DM Mono", "Share Tech Mono", ui-monospace, monospace;
+  --tracking-display: 0.05em;
+  --tracking-wide:   0.14em;
+  --leading-body:    1.6;
+
+  /* type scale — the mobile block at the bottom redefines these TOKENS,
+     never the selectors, so components stay single-source. */
+  --fs-display:      clamp(38px, 8.2vh, 150px);
+  --fs-lede:         clamp(10px, 0.95vw, 20px);
+  --fs-band:         clamp(12px, 1.3vw, 30px);
+  --fs-colhead:      clamp(10px, 0.92vw, 22px);
+  --fs-cell:         clamp(13px, 1.5vw, 34px);
+  --fs-team:         clamp(12px, 1.3vw, 30px);
+  --fs-points:       clamp(15px, 1.7vw, 38px);
+  --fs-check:        clamp(20px, 2vw, 44px);
+  --fs-foot:         clamp(10px, 0.95vw, 20px);
+
+  /* unigrid spacing — strict 4px module */
+  --u1: 4px; --u2: 8px; --u3: 12px; --u4: 16px;
+  --u5: 20px; --u6: 24px; --u8: 32px; --u12: 48px;
+}
+
+/* ---------- 3. Reset / page ground -------------------------------------- */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;                 /* locked one-screen board — see mobile block */
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The locked, non-scrolling viewport belongs to the leaderboard specifically,
+   not to the system. Any other page built on these tokens opts out by putting
+   data-doc on <html> — the styleguide does exactly that. Declared after the
+   base rule so it wins without !important. */
+html[data-doc], html[data-doc] body { overflow: auto; height: auto; }
+
+/* ---------- 4. Poster furniture ----------------------------------------- */
+
+/* The illustrated background. Hidden by default; the data-scene attribute on
+   <html> picks exactly one. See index.html.
+     wpa     — flat WPA ridge composition, driven by the tokens above
+     classic — the original travel-poster scene, preserved verbatim
+     none    — no illustration, pure Unigrid on flat cream paper           */
+.scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: none;
+}
+.scene svg { width: 100%; height: 100%; display: block; }
+
+[data-scene="wpa"]     .scene[data-name="wpa"]     { display: block; }
+[data-scene="classic"] .scene[data-name="classic"] { display: block; }
+
+/* The WPA scene is a band pinned to the bottom edge, not a full-bleed image.
+   On the locked desktop layout the board occupies nearly the whole viewport,
+   so a full-bleed illustration would be covered and only leak a few pixels of
+   unreadable color at the margins. A bottom band reads properly in the side
+   margins and in the strip beneath the board. The classic scene keeps its
+   original full-bleed behaviour. */
+.scene[data-name="wpa"] svg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: clamp(120px, 26vh, 300px);
+}
+
+/* Printed trim line, inset from the sheet edge like a real poster crop mark.
+   Deliberately thin: it must not steal vertical space from the locked layout. */
+.poster-frame {
+  position: fixed;
+  inset: clamp(5px, 0.8vh, 12px);
+  z-index: 3;
+  pointer-events: none;
+  border: var(--border-w) solid var(--border);
+}
+
+.page {
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+  height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(10px, 1.3vh, 18px) clamp(18px, 3.1vw, 68px);
+  gap: clamp(5px, 0.8vh, 12px);
+}
+
+/* ============================================================================
+   COMPONENT ARCHETYPES
+   Each of these has a card in design-system/index.html.
+   ========================================================================== */
+
+/* ---------- .band — deep forest green header container ------------------ */
+/* Deep green ground, cream display type, one rust accent rule beneath.
+   The rule is an inset shadow so it sits INSIDE the 2px outline. */
+.band {
+  background: var(--primary);
+  color: var(--on-primary);
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: inset 0 calc(-1 * var(--rule-accent-w)) 0 0 var(--secondary);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-display);
+}
+.band__title {
+  margin: 0;
+  font-size: var(--fs-display);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: var(--tracking-display);
+}
+.band__lede {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--fs-lede);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ---------- .unigrid — boxy card / grid container ----------------------- */
+/* Heavy 2px outline, zero radius, flat offset block shadow. Columns are
+   separated by prominent 3px vertical rules, never hairlines. */
+.unigrid {
+  background: var(--background);
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-retro);
+}
+.unigrid--grid {
+  display: grid;
+  gap: 0;
+}
+.unigrid--grid > * + * { border-left: var(--border-w-heavy) solid var(--border); }
+.unigrid__cell { padding: var(--u4); min-width: 0; }
+.unigrid__cell h3 {
+  margin: 0 0 var(--u2);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-display);
+  font-size: 1rem;
+}
+
+/* ---------- .btn — tactile button --------------------------------------- */
+/* Thick border, block shadow, instant state change. On hover the block
+   presses INTO its own shadow rather than blurring or lifting. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--u2);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-display);
+  font-size: 1rem;
+  line-height: 1;
+  padding: var(--u3) var(--u5);
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-retro);
+  background: var(--background);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: none;            /* printed objects do not ease */
+  text-decoration: none;
+}
+.btn:hover,
+.btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: var(--shadow-press);
+}
+.btn:focus-visible {
+  outline: var(--border-w-heavy) solid var(--accent);
+  outline-offset: 2px;
+}
+.btn--primary   { background: var(--primary);   color: var(--on-primary); }
+.btn--primary:hover   { background: var(--text-primary); }
+.btn--secondary { background: var(--secondary); color: var(--on-secondary); }
+.btn--secondary:hover { background: var(--accent); }
+.btn--ghost     { background: transparent;      color: var(--text-primary); }
+.btn--ghost:hover     { background: var(--surface); }
+
+/* ---------- .badge — printed stamp -------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--u2);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.8125rem;
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--on-accent);
+  background: var(--accent);
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--u2) var(--u3);
+}
+.badge--paper { background: var(--background); }
+.badge--green { background: var(--primary); color: var(--on-primary); }
+.badge--rust  { background: var(--secondary); color: var(--on-secondary); }
+
+/* ---------- .rule--accent — standalone rust divider --------------------- */
+.rule--accent {
+  border: 0;
+  height: var(--rule-accent-w);
+  background: var(--secondary);
+  margin: 0;
+}
+.rule--heavy {
+  border: 0;
+  height: var(--border-w-heavy);
+  background: var(--border);
+  margin: 0;
+}
+
+/* ---------- .status — live indicator ------------------------------------ */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--u2);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--fs-lede);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+  color: var(--text-primary);
+  background: var(--background);
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--u1) var(--u3);
+  white-space: nowrap;
+}
+.status .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius);   /* square. it was never a dot. */
+  background: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.status .dot.live  { background: var(--primary); }
+.status .dot.error { background: var(--secondary); }
+
+/* ---------- .plaque — numeric display treatment ------------------------- */
+.plaque {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+/* ============================================================================
+   LEADERBOARD APPLICATION
+   The <table> is string-built in JS and re-rendered every 30s. Every class
+   name below is emitted by that code — this section restyles it without
+   touching the markup generator.
+   ========================================================================== */
+
+/* ---------- masthead ---------------------------------------------------- */
+.masthead {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: clamp(2px, 0.4vh, 7px);
+  padding: clamp(6px, 1.1vh, 16px) clamp(16px, 2vw, 40px)
+           calc(clamp(6px, 1.1vh, 16px) + var(--rule-accent-w));
+}
+.brand { display: contents; }
+.brand h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+  color: var(--on-primary);
+}
+.brand h1 span { color: var(--accent); }
+.brand p {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--fs-lede);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.controls {
+  position: absolute;
+  top: clamp(8px, 1.2vh, 18px);
+  right: clamp(10px, 1.4vw, 26px);
+  display: flex;
+  align-items: center;
+  gap: var(--u3);
+}
+
+/* ---------- board ------------------------------------------------------- */
+.board {
+  /* Content height — stretching it to fill left a dead cream bar. But it may
+     SHRINK (0 1 auto) so a long roster clips rows instead of shoving the
+     footnote off the bottom of a page whose overflow is hidden. */
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+.scroll { overflow: hidden; height: 100%; }
+
+.board-error {
+  margin: 0;
+  padding: var(--u6) var(--u4);
+  text-align: center;
+  font-family: var(--font-body);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-display);
+  color: var(--text-muted);
+}
+
+table {
+  width: 100%;
+  height: auto;
+  border-collapse: collapse;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+/* Group band row — the deep green header with the rust accent line under it.
+   .spacer gets the same green so the band runs unbroken edge to edge. */
+thead tr.group th {
+  background: var(--primary);
+  color: var(--on-primary);
+  font-family: var(--font-display);
+  font-size: var(--fs-band);
+  font-weight: 800;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  padding: clamp(4px, 0.7vh, 10px) var(--u2);
+  text-align: center;
+  border-bottom: var(--rule-accent-w) solid var(--secondary);
+}
+
+/* Column label row — tan sheet, charcoal caps, heavy rule closing the head. */
+thead tr.cols th {
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--fs-colhead);
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+  line-height: 1.05;
+  text-transform: uppercase;
+  padding: clamp(5px, 0.8vh, 12px) var(--u1);
+  text-align: center;
+  white-space: normal;
+  position: sticky;
+  top: 0;
+  border-bottom: var(--border-w-heavy) solid var(--border);
+}
+thead tr.cols th.team-h { text-align: left; padding-left: var(--u2); }
+
+/* Column sizing. These <col> rules are the ONLY thing that sizes columns under
+   table-layout:fixed — per-cell width declarations are ignored, because the
+   first row is the colspan'd group band. Unlisted columns split what is left
+   evenly. Courier Prime is a monospace and far wider than the condensed sans
+   this board used to run, so team needs materially more room than 19%. */
+col.col-rank   { width: 4.5%; }
+col.col-team   { width: 22%; }
+col.col-points { width: 7%; }
+
+tbody td {
+  padding: clamp(3px, 1.05vh, 22px) var(--u2);
+  text-align: center;
+  border-bottom: 1px solid var(--text-muted);
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--fs-cell);
+  color: var(--text-primary);
+}
+tbody tr:last-child td { border-bottom: none; }
+
+tbody td.team {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--fs-team);
+}
+tbody td.rank {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+tbody td.points {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-points);
+  font-variant-numeric: tabular-nums;
+}
+tbody td.muted { color: var(--text-muted); }
+
+/* Unigrid verticals — the brochure column device, at group boundaries. */
+td.divide, th.divide { border-left: var(--border-w-heavy) solid var(--border); }
+
+/* Zebra. :not(.tie) keeps it off highlighted cells, so the tie rule below
+   needs no !important to win — do not "simplify" this back to plain td. */
+tbody tr:nth-child(even) td:not(.tie) { background: var(--surface); }
+
+/* Points tie — a stamped mustard block on team name + points only.
+   Charcoal on mustard is 7.8:1. Cream on mustard would be 1.9:1, hence
+   --on-accent rather than a reversed treatment. */
+tbody td.tie {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: inset 0 0 0 var(--border-w) var(--border);
+}
+
+/* Rank-1 row is deliberately styled the same as every other row. */
+
+.check {
+  font-size: var(--fs-check);
+  line-height: 1;
+  display: inline-block;
+  color: var(--text-muted);
+}
+.check.on  { color: var(--secondary); }
+.check.off { color: var(--text-muted); }
+
+/* Caption plaque. It sits over the scene band, so it carries its own paper
+   ground and outline rather than trusting whatever is painted behind it. */
+.footnote {
+  margin: 0 auto;
+  flex: 0 0 auto;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--fs-foot);
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+  text-align: center;
+  background: var(--background);
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--u1) var(--u4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* ============================================================================
+   MOBILE / TOUCH
+   Big monitors driven by a computer keep the locked one-screen layout above;
+   phones, tablets and narrow windows fall through to here.
+
+   This block redefines the type TOKENS and the layout only. It must never
+   re-declare a component's colors, borders or shadows — those stay single
+   source in the sections above.
+   ========================================================================== */
+@media (pointer: coarse), (max-width: 819px) {
+  :root {
+    --fs-display: clamp(30px, 11vw, 60px);
+    --fs-lede:    12px;
+    --fs-band:    13px;
+    --fs-colhead: 13px;
+    --fs-cell:    16px;
+    --fs-team:    15px;
+    --fs-points:  18px;
+    --fs-check:   24px;
+    --fs-foot:    12px;
+  }
+
+  html, body { overflow: auto; height: auto; }
+
+  .page { display: block; height: auto; padding: var(--u4); gap: 0; }
+
+  .poster-frame { display: none; }   /* trim line fights a scrolling page */
+
+  .masthead { margin-bottom: var(--u4); padding: var(--u4) var(--u3) calc(var(--u4) + var(--rule-accent-w)); }
+  .controls { position: static; width: 100%; justify-content: center; margin-top: var(--u3); }
+
+  .board { flex: none; }
+  .scroll {
+    overflow-x: auto;
+    overflow-y: visible;
+    height: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table { table-layout: auto; width: auto; min-width: 720px; height: auto; }
+
+  thead tr.group th { padding: var(--u2); }
+  thead tr.cols th  { padding: 9px var(--u2); }
+  tbody td { padding: 10px var(--u2); white-space: nowrap; }
+  /* auto table-layout on mobile: <col> widths stop applying, columns size to content */
+
+  .footnote { margin-top: var(--u4); }
+}

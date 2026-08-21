@@ -392,8 +392,11 @@ html[data-doc] body { background: var(--background); }  /* spec pages read on pa
   align-items: center;
   justify-content: center;
   /* Yellowtail's descenders hang well below the line box, so this clears the
-     wordmark's tail rather than the box the browser reports. */
-  margin-top: clamp(6px, 2.6vh, 30px);
+     wordmark's tail rather than the box the browser reports. Measured against
+     real glyph ink: at 1512x743 the tail of the J bottoms out 28px under the
+     baseline, and only ~6px of that clearance is left here. Do not shrink it
+     further without re-measuring — the J and L tails sit directly over the chip. */
+  margin-top: clamp(4px, 1.65vh, 20px);
   margin-bottom: 0;
 }
 

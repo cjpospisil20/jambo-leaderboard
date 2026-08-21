@@ -34,56 +34,8 @@
   <rect x="0" y="0" width="1440" height="130" fill="var(--page-ground)"/>
   <rect x="0" y="0" width="1440" height="56"  fill="#47688C"/>
 
-  <!-- banded sun -->
-  <circle cx="1180" cy="78" r="62" fill="var(--accent)" stroke="var(--border)" stroke-width="5"/>
-  <rect x="1123" y="58" width="114" height="7" fill="var(--page-ground)"/>
-  <rect x="1123" y="86" width="114" height="7" fill="var(--page-ground)"/>
-
-  <!-- sand: three flat bands, dune horizon at 600 -->
-  <path fill="#E6C471" d="M0 612 L180 596 L392 616 L610 594 L840 614 L1064 596 L1268 616 L1440 600 L1440 720 L0 720 Z"/>
-  <path fill="#B78D49" d="M0 664 L240 650 L470 668 L720 648 L980 668 L1220 650 L1440 664 L1440 720 L0 720 Z"/>
-  <path fill="#976F35" d="M0 702 L300 692 L640 704 L980 690 L1240 702 L1440 694 L1440 720 L0 720 Z"/>
-
-  <!-- dune grass: blades based on the sand, gold seed heads -->
-  <g stroke-linecap="butt">
-    <g fill="#3D5724">
-      <path d="M28 720 Q34 664 18 632 L40 634 Q52 668 46 720 Z"/>
-      <path d="M96 720 Q92 668 112 638 L128 648 Q108 676 114 720 Z"/>
-      <path d="M256 720 Q262 668 246 638 L268 641 Q280 672 274 720 Z"/>
-      <path d="M470 720 Q464 670 484 640 L500 650 Q480 678 488 720 Z"/>
-      <path d="M712 720 Q718 666 702 634 L724 637 Q736 670 730 720 Z"/>
-      <path d="M948 720 Q942 672 962 644 L978 654 Q958 680 966 720 Z"/>
-      <path d="M1186 720 Q1192 664 1176 632 L1198 635 Q1210 668 1204 720 Z"/>
-      <path d="M1402 720 Q1396 670 1416 640 L1432 650 Q1412 678 1420 720 Z"/>
-    </g>
-    <g fill="#5C7A33">
-      <path d="M62 720 Q70 674 58 648 L76 652 Q84 680 78 720 Z"/>
-      <path d="M182 720 Q176 676 196 650 L210 660 Q192 684 198 720 Z"/>
-      <path d="M348 720 Q356 672 344 644 L362 648 Q372 678 366 720 Z"/>
-      <path d="M566 720 Q560 678 580 652 L594 662 Q576 686 582 720 Z"/>
-      <path d="M806 720 Q814 670 802 642 L820 646 Q830 676 824 720 Z"/>
-      <path d="M1042 720 Q1036 676 1056 650 L1070 660 Q1052 684 1058 720 Z"/>
-      <path d="M1276 720 Q1284 672 1272 644 L1290 648 Q1300 678 1294 720 Z"/>
-    </g>
-    <g fill="#7A9A3F">
-      <path d="M140 720 Q146 684 136 662 L152 666 Q160 688 155 720 Z"/>
-      <path d="M420 720 Q414 686 432 666 L444 674 Q428 692 434 720 Z"/>
-      <path d="M652 720 Q658 682 648 660 L664 664 Q672 688 667 720 Z"/>
-      <path d="M886 720 Q880 686 898 666 L910 674 Q894 692 900 720 Z"/>
-      <path d="M1120 720 Q1126 682 1116 660 L1132 664 Q1140 688 1135 720 Z"/>
-      <path d="M1348 720 Q1342 686 1360 666 L1372 674 Q1356 692 1362 720 Z"/>
-    </g>
-    <g fill="#C7A24A">
-      <path d="M18 632 q16 -6 24 2 q-14 10 -24 -2 Z"/>
-      <path d="M112 638 q18 -4 24 5 q-16 8 -24 -5 Z"/>
-      <path d="M246 638 q16 -6 24 2 q-14 10 -24 -2 Z"/>
-      <path d="M484 640 q18 -4 24 5 q-16 8 -24 -5 Z"/>
-      <path d="M702 634 q16 -6 24 2 q-14 10 -24 -2 Z"/>
-      <path d="M962 644 q18 -4 24 5 q-16 8 -24 -5 Z"/>
-      <path d="M1176 632 q16 -6 24 2 q-14 10 -24 -2 Z"/>
-      <path d="M1416 640 q18 -4 24 5 q-16 8 -24 -5 Z"/>
-    </g>
-  </g>
+  <!-- sun -->
+  <circle cx="1180" cy="56" r="50" fill="var(--accent)" stroke="var(--border)" stroke-width="5"/>
 
   <!-- conifers framing the left and right edges, tips in the sky -->
   <g fill="#16221C">
@@ -116,6 +68,11 @@
     <path d="M1253 292 L1323 438 L1183 438 Z"/>
     <path d="M1253 396 L1335 552 L1171 552 Z"/>
   </g>
+  <!-- sand: three flat bands, dune horizon at 600 -->
+  <path fill="#E6C471" d="M0 612 L180 596 L392 616 L610 594 L840 614 L1064 596 L1268 616 L1440 600 L1440 720 L0 720 Z"/>
+  <path fill="#B78D49" d="M0 664 L240 650 L470 668 L720 648 L980 668 L1220 650 L1440 664 L1440 720 L0 720 Z"/>
+  <path fill="#976F35" d="M0 702 L300 692 L640 704 L980 690 L1240 702 L1440 694 L1440 720 L0 720 Z"/>
+
 </svg></div>
 
 <!-- ── ridge scene ────────────────────────────────────────────────────────────
@@ -228,21 +185,20 @@
   <header class="masthead">
     <div class="brand">
       <h1>Jambo <span>Leaderboard</span></h1>
-      <p>Live scores</p>
-    </div>
-    <div class="controls">
-      <span class="status" id="status">
-        <span class="dot" id="statusDot"></span>
-        <span id="statusText">Loading…</span>
-      </span>
     </div>
   </header>
+
+  <div class="status-row">
+    <span class="status" id="status">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Loading…</span>
+    </span>
+  </div>
 
   <div class="board unigrid">
     <div class="scroll"><div id="mount"></div></div>
   </div>
 
-  <p class="footnote">Updates automatically from the live sheet every 30 seconds.</p>
 </div>
 
 <script>
@@ -260,6 +216,14 @@ const REFRESH_MS = 30000;
 const BONUS_COLS     = ["costume", "beach bocce", "double", "skunk given", "skunk taken", "other"];
 const POTENTIAL_COLS = ["double used", "potential", "real potential"];
 const CHECK_COL      = "double used";
+
+/* Display-only column header renames, keyed on the normalised sheet label.
+   Redundant band prefixes are dropped — the BONUS / POTENTIAL band above the
+   header already says which group a column belongs to. */
+const HEADER_RENAMES = {
+  "bonus costume":          "Costume",
+  "potential double used?": "Double Used?"
+};
 
 /* ---------- CSV parsing (handles quotes, commas, newlines) ---------- */
 function parseCSV(text) {
@@ -355,10 +319,14 @@ function renderTable(model) {
   const colCells = cols.map((col, i) => {
     const divide = (i > 0 && col.group !== cols[i - 1].group) ? " divide" : "";
     const teamH = col.kind === "team" ? " team-h" : "";
-    // "BONUS COSTUME" is redundant under the BONUS band — show just "Costume"
-    const displayLabel = norm(col.label) === "bonus costume" ? "Costume" : col.label;
-    // stack multi-word headers onto separate lines to keep columns narrow
-    const stacked = displayLabel.split(/\s+/).map(escapeHtml).join("<br>");
+    // Display-only header renames. The sheet's own labels are left alone, so the
+    // BONUS / POTENTIAL grouping and the CHECK_COL match still key off them.
+    const displayLabel = HEADER_RENAMES[norm(col.label)] || col.label;
+    // Stack multi-word headers onto separate lines to keep columns narrow — but
+    // not the team column, which is wide enough to take its label on one line.
+    const stacked = col.kind === "team"
+      ? escapeHtml(displayLabel)
+      : displayLabel.split(/\s+/).map(escapeHtml).join("<br>");
     return '<th class="' + teamH + divide + '">' + stacked + '</th>';
   }).join("");
 
@@ -421,7 +389,9 @@ function renderTable(model) {
      so per-cell widths there are ignored and every column comes out equal.
      The widths themselves live in design-system/wpa.css, not here. */
   const colGroup = '<colgroup>' +
-    cols.map(col => '<col class="col-' + col.kind + '">').join("") +
+    cols.map(col =>
+      '<col class="col-' + col.kind + ' col--' + slugify(col.label) + '">'
+    ).join("") +
     '</colgroup>';
 
   return '' +
@@ -433,6 +403,12 @@ function renderTable(model) {
       '</thead>' +
       '<tbody>' + body + '</tbody>' +
     '</table>';
+}
+
+/* Header label -> css class suffix, so wpa.css can size an individual column
+   by name (e.g. col--real-potential) instead of only by kind. */
+function slugify(label) {
+  return norm(label).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 function escapeHtml(s) {

@@ -84,15 +84,14 @@
 
   /* type scale — the mobile block at the bottom redefines these TOKENS,
      never the selectors, so components stay single-source. */
-  --fs-display:      clamp(34px, 8.4vh, 150px);   /* script face — small x-height */
-  --fs-lede:         clamp(10px, 0.95vw, 20px);
+  --fs-display:      clamp(34px, 12.4vh, 200px);  /* script face — small x-height */
+  --fs-lede:         clamp(10px, 0.95vw, 20px);  /* .status chip and .band__lede */
   --fs-band:         clamp(12px, 1.3vw, 30px);
-  --fs-colhead:      clamp(10px, 0.92vw, 22px);
+  --fs-colhead:      clamp(11px, 1.05vw, 25px);
   --fs-cell:         clamp(13px, 1.5vw, 34px);
   --fs-team:         clamp(12px, 1.3vw, 30px);
   --fs-points:       clamp(15px, 1.7vw, 38px);
   --fs-check:        clamp(20px, 2vw, 44px);
-  --fs-foot:         clamp(10px, 0.95vw, 20px);
 
   /* unigrid spacing — strict 4px module */
   --u1: 4px; --u2: 8px; --u3: 12px; --u4: 16px;
@@ -371,8 +370,8 @@ html[data-doc] body { background: var(--background); }  /* spec pages read on pa
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: clamp(2px, 0.4vh, 7px);
-  padding: clamp(2px, 0.5vh, 8px) clamp(16px, 2vw, 40px);
+  gap: 0;
+  padding: clamp(4px, 1vh, 16px) clamp(16px, 2vw, 40px) 0;
 }
 .brand { display: contents; }
 .brand h1 {
@@ -380,34 +379,26 @@ html[data-doc] body { background: var(--background); }  /* spec pages read on pa
   font-family: var(--font-script);
   font-size: var(--fs-display);
   font-weight: 400;
-  line-height: 0.95;
+  line-height: 1.0;          /* script ascenders need the full box at the page top */
   letter-spacing: 0.01em;
   text-transform: none;      /* it is a script face — caps would be wrong */
   color: var(--wordmark);
 }
-.brand p {
-  margin: 0;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: var(--fs-lede);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: var(--text-primary);
-}
-/* In normal flow, centred under the lede. Pinning it to a corner would drop it
-   on top of a tree now that the masthead is transparent. */
-.controls {
+/* Centred status chip between the wordmark and the board. The margin below it
+   is what drops the board down the page, opening up sky behind the masthead. */
+.status-row {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--u3);
+  margin-bottom: clamp(6px, 2.4vh, 34px);
 }
 
 /* ---------- board ------------------------------------------------------- */
 .board {
   /* Content height — stretching it to fill left a dead cream bar. But it may
      SHRINK (0 1 auto) so a long roster clips rows instead of shoving the
-     footnote off the bottom of a page whose overflow is hidden. */
+     status chip off the bottom of a page whose overflow is hidden. */
   flex: 0 1 auto;
   min-height: 0;
   overflow: hidden;
@@ -474,8 +465,14 @@ thead tr.cols th.team-h { text-align: left; padding-left: var(--u2); }
    evenly. Courier Prime is a monospace and far wider than the condensed sans
    this board used to run, so team needs materially more room than 19%. */
 col.col-rank   { width: 4.5%; }
-col.col-team   { width: 22%; }
+col.col-team   { width: 14%; }
 col.col-points { width: 7%; }
+
+/* Individual columns, by sheet label. The two POTENTIAL headers are the widest
+   words on the board and cannot wrap, so they get the slack that TEAM NAME was
+   not using. Anything unlisted splits what remains evenly. */
+col.col--potential      { width: 8.5%; }
+col.col--real-potential { width: 9.5%; }
 
 tbody td {
   padding: clamp(3px, 0.8vh, 20px) var(--u2);
@@ -535,24 +532,6 @@ tbody td.tie {
 .check.on  { color: var(--primary); }
 .check.off { color: var(--text-muted); }
 
-/* Caption plaque. It sits over the scene band, so it carries its own paper
-   ground and outline rather than trusting whatever is painted behind it. */
-.footnote {
-  margin: 0 auto;
-  flex: 0 0 auto;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: var(--fs-foot);
-  color: var(--text-primary);
-  letter-spacing: var(--tracking-display);
-  text-transform: uppercase;
-  text-align: center;
-  background: var(--background);
-  border: var(--border-w) solid var(--border);
-  border-radius: var(--radius);
-  padding: var(--u1) var(--u4);
-}
-
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
@@ -571,12 +550,11 @@ tbody td.tie {
     --fs-display: clamp(30px, 11vw, 60px);
     --fs-lede:    12px;
     --fs-band:    13px;
-    --fs-colhead: 13px;
+    --fs-colhead: 14px;
     --fs-cell:    16px;
     --fs-team:    15px;
     --fs-points:  18px;
     --fs-check:   24px;
-    --fs-foot:    12px;
   }
 
   html, body { overflow: auto; height: auto; }
@@ -598,8 +576,8 @@ tbody td.tie {
     aspect-ratio: 1440 / 720;
   }
 
-  .masthead { margin-bottom: var(--u4); padding: var(--u4) var(--u3) calc(var(--u4) + var(--rule-accent-w)); }
-  .controls { position: static; width: 100%; justify-content: center; margin-top: var(--u3); }
+  .masthead { margin-bottom: var(--u4); padding: var(--u3) var(--u3); }
+  .status-row { margin-bottom: var(--u4); }
 
   .board { flex: none; }
   .scroll {
@@ -616,5 +594,4 @@ tbody td.tie {
   tbody td { padding: 10px var(--u2); white-space: nowrap; }
   /* auto table-layout on mobile: <col> widths stop applying, columns size to content */
 
-  .footnote { margin-top: var(--u4); }
 }

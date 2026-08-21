@@ -1,0 +1,8 @@
+# Editor / tooling
+.claude/
+
+# macOS
+.DS_Store
+
+# Local scratch
+jambo-leaderboard-preview_*.html

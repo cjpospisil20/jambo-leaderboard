@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jambo Leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:      #fff0a2;
+    --cream-deep: #f3d84a;
+    --olive:      #4a6c9b;
+    --olive-deep: #375581;
+    --olive-wash: #e4ebf4;
+    --sky:        #afc0d3;
+    --sky-wash:   #afc0d3;
+    --ink:        #22231a;
+    --ink-soft:   #6b6a56;
+    --outline:    #17180f;
+    --line:       rgba(23,24,15,0.55);
+    --line-heavy: #17180f;
+    --script:     "Yellowtail", "Brush Script MT", cursive;
+    font-family: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* vintage travel-poster caps: heavy, tight, dark outline via stroke behind fill */
+  .poster-outline {
+    -webkit-text-stroke: 0.6px var(--outline);
+    paint-order: stroke fill;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    background: #7f9fb8;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .page {
+    position: relative;
+    z-index: 2;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 40px clamp(28px, 7vw, 240px) 80px;
+  }
+
+  .scene {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .scene svg { width: 100%; height: 100%; display: block; }
+
+  .poster-frame {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border: clamp(14px, 1.7vw, 30px) solid #e8dbb4;
+    box-shadow: inset 0 0 0 2px rgba(23,24,15,0.72);
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+  .brand h1 {
+    margin: 0;
+    font-size: clamp(34px, 6vw, 60px);
+    font-weight: 700;
+    letter-spacing: 0.005em;
+    line-height: 0.95;
+    color: #fff7d4;
+    -webkit-text-stroke: 2.4px var(--outline);
+    paint-order: stroke fill;
+  }
+  .brand h1 span { color: var(--olive); }
+  .brand p {
+    margin: 8px 0 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    -webkit-text-stroke: 0.5px var(--outline);
+    paint-order: stroke fill;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .status .dot {
+    width: 9px; height: 9px;
+    border-radius: 0;
+    background: var(--olive);
+  }
+  .status .dot.live  { background: #3f7d4f; }
+  .status .dot.error { background: #c07a2b; }
+  .badge-demo {
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--outline);
+    background: var(--cream-deep);
+    border: 2px solid var(--outline);
+    padding: 6px 13px;
+    border-radius: 0;
+  }
+
+  /* ---------- board ---------- */
+  .board {
+    background: #f4ead0;
+    border: 3px solid var(--outline);
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 6px 6px 0 rgba(23,24,15,0.28);
+  }
+  .scroll { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 0;
+    table-layout: auto;
+  }
+
+  thead tr.group th {
+    background: #f4ead0;
+    color: var(--olive);
+    font-family: var(--script);
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    padding: 8px 10px 3px;
+    border-bottom: 3px solid var(--outline);
+    text-align: center;
+    -webkit-text-stroke: 0.8px var(--outline);
+    paint-order: stroke fill;
+  }
+  thead tr.group th.spacer { background: #f4ead0; -webkit-text-stroke: 0; }
+
+  thead tr.cols th {
+    background: var(--olive);
+    color: #fff2ab;
+    font-family: var(--script);
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    padding: 9px 10px;
+    text-align: center;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    -webkit-text-stroke: 0.9px var(--outline);
+    paint-order: stroke fill;
+  }
+  thead tr.cols th.team-h { text-align: left; }
+
+  tbody td {
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1.5px solid var(--line);
+    white-space: nowrap;
+    -webkit-text-stroke: 0.5px var(--outline);
+    paint-order: stroke fill;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody td.team {
+    text-align: left;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  tbody td.rank { font-weight: 700; color: var(--olive); width: 46px; }
+  tbody td.points { font-weight: 700; font-size: 16px; }
+  tbody td.muted { color: var(--ink-soft); -webkit-text-stroke: 0.3px var(--outline); }
+
+  /* group dividers */
+  td.divide, th.divide { border-left: 3px solid var(--outline); }
+
+  /* alternating wash */
+  tbody tr:nth-child(even) td { background: var(--sky-wash); }
+
+  /* leader */
+  tbody tr.leader td { background: var(--olive-wash); }
+  tbody tr.leader td.rank { position: relative; }
+  tbody tr.leader td.rank::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: var(--olive);
+  }
+
+  .check { font-size: 18px; line-height: 1; display: inline-block; -webkit-text-stroke: 0; }
+  .check.on  { color: var(--olive); }
+  .check.off { color: rgba(23,24,15,0.35); }
+
+  .footnote {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    text-align: center;
+    -webkit-text-stroke: 0.4px var(--outline);
+    paint-order: stroke fill;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+  @media (max-width: 560px) {
+    .page { padding: 26px 16px 44px; }
+    .controls { width: 100%; justify-content: space-between; }
+  }
+</style>
+</head>
+<body>
+<div class="scene" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#47688c"/><stop offset="0.5" stop-color="#7f9fb8"/><stop offset="0.8" stop-color="#bccfd4"/><stop offset="1" stop-color="#f2cf86"/></linearGradient>
+    <linearGradient id="wat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4c7f9c"/><stop offset="1" stop-color="#264c62"/></linearGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#f6d888" stop-opacity="0.85"/><stop offset="1" stop-color="#f6d888" stop-opacity="0"/></radialGradient>
+    <radialGradient id="vig" cx="0.5" cy="0.4" r="0.8"><stop offset="0.6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#2e1f0c" stop-opacity="0.34"/></radialGradient>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+  </defs>
+  <rect x="0" y="0" width="1440" height="340" fill="url(#sky)"/>
+  <circle cx="1150" cy="150" r="150" fill="url(#halo)"/><circle cx="1150" cy="150" r="58" fill="#ecbf55"/>
+  <g><path d="M170 120 C231 78 352 72 406 97 C444 78 535 91 550 120 Z" fill="#f4e4b6"/><path d="M170 120 L550 120 C436 132 284 132 170 120 Z" fill="#d3bd93" opacity="0.7"/></g><g><path d="M720 96 C771 60 874 55 918 76 C950 60 1027 71 1040 96 Z" fill="#f4e4b6"/><path d="M720 96 L1040 96 C944 106 816 106 720 96 Z" fill="#d3bd93" opacity="0.7"/></g><g><path d="M25 182 C65 152 145 148 180 166 C205 152 265 161 275 182 Z" fill="#f4e4b6"/><path d="M25 182 L275 182 C200 190 100 190 25 182 Z" fill="#d3bd93" opacity="0.7"/></g>
+  <path d="M300 150 Q309 142 318 150 M318 150 Q327 142 336 150" stroke="#1b2a40" stroke-width="2.3" fill="none" opacity="0.6"/><path d="M352 134 Q361 126 370 134 M370 134 Q379 126 388 134" stroke="#1b2a40" stroke-width="2.3" fill="none" opacity="0.6"/><path d="M404 152 Q413 144 422 152 M422 152 Q431 144 440 152" stroke="#1b2a40" stroke-width="2.3" fill="none" opacity="0.6"/>
+  <path d="M0 247.6 Q 50.4 247.6 90.0 246.1 Q 129.6 244.6 180.0 244.6 Q 230.4 244.6 270.0 244.0 Q 309.6 243.3 360.0 243.3 Q 410.4 243.3 450.0 250.8 Q 489.6 258.3 540.0 258.3 Q 590.4 258.3 630.0 254.9 Q 669.6 251.6 720.0 251.6 Q 770.4 251.6 810.0 252.7 Q 849.6 253.8 900.0 253.8 Q 950.4 253.8 990.0 252.4 Q 1029.6 251.1 1080.0 251.1 Q 1130.4 251.1 1170.0 249.4 Q 1209.6 247.7 1260.0 247.7 Q 1310.4 247.7 1350.0 251.2 Q 1389.6 254.6 1440.0 254.6" fill="none" stroke="#95a2c2" stroke-width="3" opacity="0.6"/><path d="M0 247.6 Q 50.4 247.6 90.0 246.1 Q 129.6 244.6 180.0 244.6 Q 230.4 244.6 270.0 244.0 Q 309.6 243.3 360.0 243.3 Q 410.4 243.3 450.0 250.8 Q 489.6 258.3 540.0 258.3 Q 590.4 258.3 630.0 254.9 Q 669.6 251.6 720.0 251.6 Q 770.4 251.6 810.0 252.7 Q 849.6 253.8 900.0 253.8 Q 950.4 253.8 990.0 252.4 Q 1029.6 251.1 1080.0 251.1 Q 1130.4 251.1 1170.0 249.4 Q 1209.6 247.7 1260.0 247.7 Q 1310.4 247.7 1350.0 251.2 Q 1389.6 254.6 1440.0 254.6 L1440 344 L0 344 Z" fill="#7d8bb0"/>
+  <rect x="0" y="300" width="1440" height="70" fill="url(#wat)"/><rect x="0" y="300" width="1440" height="3" fill="#f4e4b6" opacity="0.5"/>
+  <rect x="1120.0" y="302.0" width="60.0" height="6.3" fill="#eec25f" opacity="0.50"/><rect x="1111.2" y="314.6" width="77.7" height="4.7" fill="#eec25f" opacity="0.45"/><rect x="1101.4" y="328.4" width="97.2" height="4.0" fill="#eec25f" opacity="0.38"/><rect x="1093.6" y="339.5" width="112.7" height="8.5" fill="#eec25f" opacity="0.34"/><rect x="1084.5" y="352.5" width="131.0" height="6.8" fill="#eec25f" opacity="0.28"/>
+  <g>
+  <path d="M338 330 L392 330 L382 343 L349 343 Z" fill="#1b2a40"/>
+  <path d="M365 328 L365 291 L342 328 Z" fill="#f4e4b6"/><path d="M368 328 L368 297 L389 328 Z" fill="#d9c79a"/>
+  <line x1="365" y1="291" x2="365" y2="330" stroke="#171610" stroke-width="1.4"/>
+  <rect x="349" y="343" width="34" height="9" fill="#356079" opacity="0.4"/></g><g>
+  <rect x="1050" y="300" width="150" height="9" fill="#1b2a40"/>
+  <rect x="1058" y="309" width="5" height="26" fill="#1b2a40"/><rect x="1120" y="309" width="5" height="26" fill="#1b2a40"/><rect x="1184" y="309" width="5" height="26" fill="#1b2a40"/>
+  <path d="M1114 304 L1119 224 L1141 224 L1146 304 Z" fill="#f2ead4"/>
+  <path d="M1131 304 L1131 224 L1141 224 L1146 304 Z" fill="#c7b48a"/>
+  <rect x="1118" y="262" width="24" height="9" fill="#4a6c9b"/><rect x="1118" y="240" width="24" height="7" fill="#4a6c9b"/>
+  <rect x="1121" y="206" width="18" height="18" fill="#1b2a40"/><rect x="1124" y="211" width="12" height="9" fill="#ecbf55"/>
+  <path d="M1122 206 L1130 196 L1138 206 Z" fill="#1b2a40"/><circle cx="1130" cy="215" r="16" fill="#ecbf55" opacity="0.30"/>
+  <rect x="1122" y="309" width="26" height="20" fill="#356079" opacity="0.45"/></g>
+  <path d="M0 344 C 260 312, 520 348, 760 330 C 1010 310, 1230 350, 1440 326 L1440 900 L0 900 Z" fill="#e6c471"/>
+  <path d="M0 470 C 300 430, 560 486, 830 456 C 1080 432, 1270 486, 1440 456 L1440 560 L0 560 Z" fill="#b78d49" opacity="0.6"/>
+  <path d="M0 470 C 300 430, 560 486, 830 456 C 1080 432, 1270 486, 1440 456 L1440 900 L0 900 Z" fill="#e6c471"/>
+  <path d="M0 604 C 320 556, 640 616, 900 586 C 1150 560, 1310 610, 1440 592 L1440 900 L0 900 Z" fill="#b78d49"/>
+  <path d="M0 700 C 300 662, 620 716, 900 690 L900 900 L0 900 Z" fill="#976f35" opacity="0.5"/>
+  <path d="M-5.0 730.0 Q3.7 350.0 27.3 -30.0 L50.7 -30.0 Q69.3 350.0 73.0 730.0 Z" fill="#8f4c2a"/><path d="M38.7 730.0 Q55.2 350.0 40.6 -30.0 L50.7 -30.0 Q69.3 350.0 73.0 730.0 Z" fill="#5e3319"/><path d="M-5.0 730.0 Q3.7 350.0 27.3 -30.0 L34.3 -30.0 Q13.1 350.0 7.5 730.0 Z" fill="#a9683c" opacity="0.8"/><path d="M46.7 501.8 L123.0 566.6 L90.7 578.0 L120.0 616.1 L70.2 599.3 L46.7 625.3 L29.1 593.2 L23.2 562.8 Z" fill="#16221c"/><path d="M23.9 402.2 L-62.1 469.8 L-25.7 481.7 L-58.8 521.5 L-2.5 504.0 L23.9 531.0 L43.8 497.6 L50.4 465.8 Z" fill="#16221c"/><path d="M48.0 302.7 L143.7 373.1 L103.2 385.5 L140.1 426.9 L77.4 408.6 L48.0 436.8 L25.9 402.0 L18.5 368.9 Z" fill="#16221c"/><path d="M25.2 203.2 L-80.3 276.3 L-35.7 289.2 L-76.3 332.2 L-7.3 313.3 L25.2 342.5 L49.6 306.4 L57.7 272.0 Z" fill="#16221c"/><path d="M49.2 103.6 L164.5 179.5 L115.8 192.9 L160.1 237.6 L84.7 217.9 L49.2 248.3 L22.6 210.8 L13.8 175.1 Z" fill="#16221c"/><path d="M26.5 4.1 L-98.6 82.8 L-45.7 96.7 L-93.8 143.0 L-12.0 122.6 L26.5 154.1 L55.3 115.2 L64.9 78.1 Z" fill="#16221c"/><path d="M39.0 -98.4 L144.5 -20.9 L99.8 -7.2 L140.4 38.4 L71.4 18.3 L39.0 49.3 L14.7 11.0 L6.6 -25.4 Z" fill="#16221c"/><path d="M39.0 -98.4 L-66.5 -20.9 L-21.8 -7.2 L-62.4 38.4 L6.6 18.3 L39.0 49.3 L63.3 11.0 L71.4 -25.4 Z" fill="#16221c"/>
+  <path d="M195.6 706.0 L204.4 706.0 L204.8 586.0 L199.7 586.0 Z" fill="#16221c"/><path d="M195.5 520.9 L287.5 665.5 L210.8 615.5 L114.5 662.7 Z" fill="#16221c"/><path d="M204.0 446.1 L300.1 613.8 L219.9 554.0 L114.6 623.9 Z" fill="#16221c"/><path d="M204.0 378.8 L288.8 549.2 L217.9 493.3 L119.6 556.5 Z" fill="#16221c"/><path d="M202.3 339.0 L255.4 478.5 L212.5 435.3 L145.0 480.4 Z" fill="#16221c"/><path d="M208.7 272.2 L268.4 424.7 L219.3 374.6 L144.1 428.0 Z" fill="#16221c"/><path d="M208.5 212.2 L255.5 379.0 L217.1 314.6 L158.0 371.7 Z" fill="#16221c"/><path d="M209.6 150.0 L246.2 321.3 L215.9 254.4 L174.5 311.7 Z" fill="#16221c"/><path d="M216.5 91.9 L245.9 256.5 L221.3 194.6 L187.8 257.2 Z" fill="#16221c"/>
+  <path d="M92.5 694.0 L99.5 694.0 L96.7 602.8 L92.7 602.8 Z" fill="#20302a"/><path d="M96.8 535.5 L161.2 674.3 L108.1 623.4 L32.1 668.6 Z" fill="#20302a"/><path d="M95.3 494.6 L153.8 627.2 L105.6 578.3 L38.7 619.3 Z" fill="#20302a"/><path d="M90.7 456.9 L155.6 571.2 L101.6 533.5 L33.9 563.0 Z" fill="#20302a"/><path d="M95.0 414.1 L152.1 531.4 L104.4 488.2 L43.9 527.3 Z" fill="#20302a"/><path d="M93.4 351.9 L134.6 481.7 L101.0 440.9 L55.2 479.1 Z" fill="#20302a"/><path d="M91.8 308.9 L131.5 440.1 L98.4 395.6 L54.1 438.5 Z" fill="#20302a"/><path d="M86.8 261.9 L112.2 390.7 L91.6 349.8 L59.5 390.7 Z" fill="#20302a"/><path d="M86.5 224.5 L108.2 346.5 L90.3 305.0 L64.9 339.3 Z" fill="#20302a"/>
+  <path d="M316.9 710.0 L323.1 710.0 L323.4 638.0 L319.8 638.0 Z" fill="#16221c"/><path d="M318.5 593.1 L377.7 681.5 L330.3 655.1 L251.7 686.8 Z" fill="#16221c"/><path d="M318.0 559.3 L378.7 658.0 L328.1 619.3 L264.1 648.9 Z" fill="#16221c"/><path d="M324.0 525.0 L369.1 614.1 L332.4 583.5 L272.9 613.3 Z" fill="#16221c"/><path d="M323.3 487.8 L368.3 575.5 L331.8 547.4 L278.3 581.1 Z" fill="#16221c"/><path d="M328.2 442.3 L368.0 538.7 L335.6 510.4 L284.8 542.4 Z" fill="#16221c"/><path d="M324.8 416.7 L353.8 508.2 L330.3 475.5 L295.6 502.1 Z" fill="#16221c"/><path d="M328.3 376.3 L357.6 475.1 L333.3 439.0 L302.3 469.1 Z" fill="#16221c"/><path d="M333.2 341.8 L352.4 433.0 L336.7 403.2 L313.4 429.5 Z" fill="#16221c"/>
+  <path d="M1367.0 730.0 Q1370.7 350.0 1389.3 -30.0 L1412.7 -30.0 Q1436.3 350.0 1445.0 730.0 Z" fill="#8f4c2a"/><path d="M1410.7 730.0 Q1422.2 350.0 1402.6 -30.0 L1412.7 -30.0 Q1436.3 350.0 1445.0 730.0 Z" fill="#5e3319"/><path d="M1367.0 730.0 Q1370.7 350.0 1389.3 -30.0 L1396.3 -30.0 Q1380.1 350.0 1379.5 730.0 Z" fill="#a9683c" opacity="0.8"/><path d="M1416.7 501.8 L1493.0 566.6 L1460.7 578.0 L1490.0 616.1 L1440.2 599.3 L1416.7 625.3 L1399.1 593.2 L1393.2 562.8 Z" fill="#16221c"/><path d="M1392.8 416.5 L1308.1 483.6 L1343.9 495.5 L1311.4 535.0 L1366.7 517.6 L1392.8 544.5 L1412.3 511.3 L1418.8 479.7 Z" fill="#16221c"/><path d="M1415.6 331.1 L1508.6 400.7 L1469.3 413.0 L1505.0 453.9 L1444.2 435.9 L1415.6 463.7 L1394.2 429.3 L1387.0 396.6 Z" fill="#16221c"/><path d="M1391.7 245.8 L1290.3 317.8 L1333.2 330.5 L1294.2 372.8 L1360.5 354.2 L1391.7 382.9 L1415.1 347.4 L1422.9 313.5 Z" fill="#16221c"/><path d="M1414.5 160.5 L1524.2 234.8 L1477.8 247.9 L1520.0 291.7 L1448.3 272.4 L1414.5 302.2 L1389.2 265.4 L1380.8 230.5 Z" fill="#16221c"/><path d="M1390.6 75.2 L1272.5 151.9 L1322.5 165.4 L1277.0 210.6 L1354.3 190.7 L1390.6 221.4 L1417.8 183.5 L1426.9 147.4 Z" fill="#16221c"/><path d="M1413.4 -10.1 L1539.9 69.0 L1486.4 82.9 L1535.0 129.4 L1452.4 109.0 L1413.4 140.6 L1384.3 101.5 L1374.5 64.3 Z" fill="#16221c"/><path d="M1401.0 -98.4 L1506.5 -20.9 L1461.8 -7.2 L1502.4 38.4 L1433.4 18.3 L1401.0 49.3 L1376.7 11.0 L1368.6 -25.4 Z" fill="#16221c"/><path d="M1401.0 -98.4 L1295.5 -20.9 L1340.2 -7.2 L1299.6 38.4 L1368.6 18.3 L1401.0 49.3 L1425.3 11.0 L1433.4 -25.4 Z" fill="#16221c"/>
+  <path d="M1235.6 706.0 L1244.4 706.0 L1240.3 586.0 L1235.2 586.0 Z" fill="#16221c"/><path d="M1243.6 539.6 L1334.8 653.6 L1259.3 617.4 L1156.0 650.1 Z" fill="#16221c"/><path d="M1241.4 479.3 L1317.2 622.6 L1255.2 569.3 L1163.7 615.5 Z" fill="#16221c"/><path d="M1237.5 446.2 L1320.9 566.7 L1251.8 524.0 L1151.4 563.5 Z" fill="#16221c"/><path d="M1238.7 395.0 L1306.7 511.9 L1251.7 476.9 L1163.8 518.5 Z" fill="#16221c"/><path d="M1234.8 343.0 L1296.6 473.1 L1244.9 429.7 L1173.2 474.7 Z" fill="#16221c"/><path d="M1234.4 288.3 L1290.7 421.5 L1244.8 382.2 L1175.1 424.7 Z" fill="#16221c"/><path d="M1226.1 253.0 L1279.4 371.8 L1235.3 336.7 L1176.7 374.7 Z" fill="#16221c"/><path d="M1225.1 197.7 L1258.7 333.1 L1231.8 289.2 L1185.4 337.7 Z" fill="#16221c"/><path d="M1232.0 165.2 L1265.6 288.9 L1238.2 243.9 L1200.4 278.5 Z" fill="#16221c"/><path d="M1225.1 116.2 L1251.7 251.7 L1230.2 197.0 L1194.1 248.5 Z" fill="#16221c"/>
+  <path d="M1340.5 694.0 L1347.5 694.0 L1347.3 602.8 L1343.3 602.8 Z" fill="#20302a"/><path d="M1347.9 564.8 L1409.7 666.2 L1360.0 626.4 L1279.0 659.0 Z" fill="#20302a"/><path d="M1341.4 520.8 L1397.7 625.1 L1352.5 586.0 L1278.4 622.0 Z" fill="#20302a"/><path d="M1346.7 473.6 L1394.9 574.2 L1355.9 545.4 L1294.8 576.7 Z" fill="#20302a"/><path d="M1347.4 434.2 L1395.0 541.6 L1356.7 505.6 L1294.5 540.6 Z" fill="#20302a"/><path d="M1349.8 393.0 L1396.0 503.0 L1358.0 465.5 L1301.3 507.9 Z" fill="#20302a"/><path d="M1347.8 362.5 L1381.2 463.1 L1354.4 426.6 L1312.7 461.5 Z" fill="#20302a"/><path d="M1349.6 324.9 L1381.0 423.5 L1355.6 386.9 L1316.9 418.8 Z" fill="#20302a"/><path d="M1355.0 274.6 L1380.8 385.1 L1359.3 346.0 L1331.7 386.8 Z" fill="#20302a"/><path d="M1354.6 244.6 L1374.0 339.1 L1357.9 307.1 L1337.6 335.6 Z" fill="#20302a"/>
+  <path d="M1116.9 710.0 L1123.1 710.0 L1120.2 638.0 L1116.6 638.0 Z" fill="#16221c"/><path d="M1119.0 598.5 L1175.1 681.1 L1129.8 655.7 L1054.1 680.3 Z" fill="#16221c"/><path d="M1114.9 558.8 L1176.0 651.5 L1124.9 619.3 L1059.8 654.1 Z" fill="#16221c"/><path d="M1118.7 521.2 L1171.6 615.6 L1127.7 583.1 L1066.5 623.3 Z" fill="#16221c"/><path d="M1114.8 492.1 L1159.5 575.4 L1123.3 547.8 L1071.6 572.8 Z" fill="#16221c"/><path d="M1112.0 446.7 L1148.4 541.5 L1119.2 510.9 L1069.8 548.3 Z" fill="#16221c"/><path d="M1112.5 413.7 L1146.9 504.7 L1118.2 475.2 L1081.0 508.8 Z" fill="#16221c"/><path d="M1111.7 379.4 L1135.6 470.4 L1116.0 439.3 L1087.1 470.8 Z" fill="#16221c"/><path d="M1108.3 334.9 L1129.6 440.2 L1111.8 402.5 L1088.6 446.7 Z" fill="#16221c"/>
+  <path d="M0 900 L0 742 C 130 708, 260 754, 340 808 C 400 848, 300 900, 250 900 Z" fill="#12160e"/>
+  <path d="M1440 900 L1440 742 C 1310 708, 1180 754, 1100 808 C 1040 848, 1140 900, 1190 900 Z" fill="#12160e"/>
+  <g><path d="M159.9 908.0 C172.4 667.5 183.3 427.1 187.6 335.5 C191.8 427.1 180.4 667.5 186.5 908.0 Z" fill="#1e2c14"/><path d="M-19.8 908.0 C3.6 694.3 54.8 480.6 58.8 399.2 C62.9 480.6 11.2 694.3 5.5 908.0 Z" fill="#1e2c14"/><path d="M264.3 908.0 C291.3 700.6 339.4 493.2 345.5 414.2 C351.6 493.2 302.8 700.6 302.5 908.0 Z" fill="#3d5724"/><path d="M34.3 908.0 C46.5 701.7 55.8 495.5 60.1 416.9 C64.5 495.5 54.7 701.7 61.5 908.0 Z" fill="#1e2c14"/><path d="M-5.4 908.0 C21.0 702.4 80.6 496.9 85.0 418.5 C89.3 496.9 29.2 702.4 21.8 908.0 Z" fill="#1e2c14"/><path d="M265.3 908.0 C281.4 704.5 298.8 500.9 303.9 423.4 C309.0 500.9 291.0 704.5 297.1 908.0 Z" fill="#3d5724"/><path d="M85.9 908.0 C110.7 716.7 152.3 525.5 158.2 452.6 C164.1 525.5 121.7 716.7 122.7 908.0 Z" fill="#3d5724"/><path d="M34.1 908.0 C56.4 719.2 91.4 530.3 97.0 458.4 C102.6 530.3 66.8 719.2 69.1 908.0 Z" fill="#3d5724"/><path d="M-2.4 908.0 C18.0 720.7 41.3 533.4 47.6 462.0 C53.8 533.4 29.8 720.7 36.9 908.0 Z" fill="#3d5724"/><path d="M47.6 462.0 q19.6 13.4 11.0 49.1 q-11.0 8.9 -11.0 -49.1 Z" fill="#c7a24a"/><path d="M300.6 908.0 C319.6 721.7 344.7 535.4 350.1 464.4 C355.5 535.4 329.8 721.7 334.5 908.0 Z" fill="#3d5724"/><path d="M-32.2 908.0 C-3.3 726.9 58.6 545.8 63.8 476.8 C69.0 545.8 6.4 726.9 0.1 908.0 Z" fill="#1e2c14"/><path d="M217.0 908.0 C241.9 728.4 293.8 548.9 298.5 480.5 C303.2 548.9 250.7 728.4 246.2 908.0 Z" fill="#1e2c14"/><path d="M67.3 908.0 C74.0 731.8 64.2 555.7 68.6 488.6 C72.9 555.7 82.1 731.8 94.3 908.0 Z" fill="#3d5724"/><path d="M183.3 908.0 C205.5 733.2 248.2 558.3 252.8 491.7 C257.4 558.3 214.1 733.2 212.0 908.0 Z" fill="#1e2c14"/><path d="M222.3 908.0 C239.0 734.1 254.7 560.2 260.3 493.9 C265.9 560.2 249.5 734.1 257.3 908.0 Z" fill="#1e2c14"/><path d="M148.6 908.0 C163.7 743.9 175.1 579.9 180.5 517.4 C185.9 579.9 173.8 743.9 182.3 908.0 Z" fill="#3d5724"/><path d="M180.5 517.4 q16.9 11.7 9.5 43.0 q-9.5 7.8 -9.5 -43.0 Z" fill="#c7a24a"/><path d="M305.0 908.0 C318.7 749.6 334.1 591.2 338.3 530.8 C342.5 591.2 326.6 749.6 331.4 908.0 Z" fill="#3d5724"/><path d="M338.3 530.8 q13.2 11.3 7.4 41.5 q-7.4 7.5 -7.4 -41.5 Z" fill="#c7a24a"/><path d="M-43.1 908.0 C-30.9 751.7 -46.4 595.4 -38.9 535.8 C-31.5 595.4 -16.9 751.7 3.7 908.0 Z" fill="#5c7a33"/><path d="M297.1 908.0 C320.0 751.7 341.7 595.5 349.3 535.9 C357.0 595.5 334.3 751.7 344.8 908.0 Z" fill="#5c7a33"/><path d="M164.0 908.0 C190.1 757.9 237.3 607.7 243.1 550.5 C248.9 607.7 201.0 757.9 200.2 908.0 Z" fill="#5c7a33"/><path d="M116.7 908.0 C124.2 766.4 94.1 624.8 101.3 570.9 C108.6 624.8 137.7 766.4 162.0 908.0 Z" fill="#a85a34"/><path d="M101.3 570.9 q22.6 10.1 12.7 37.1 q-12.7 6.7 -12.7 -37.1 Z" fill="#c7a24a"/><path d="M13.3 908.0 C31.0 766.8 42.8 625.6 49.4 571.9 C55.9 625.6 43.3 766.8 54.1 908.0 Z" fill="#3d5724"/><path d="M49.4 571.9 q20.4 10.1 11.4 37.0 q-11.4 6.7 -11.4 -37.0 Z" fill="#c7a24a"/><path d="M65.6 908.0 C69.8 771.4 37.7 634.8 43.8 582.8 C49.8 634.8 81.2 771.4 103.4 908.0 Z" fill="#5c7a33"/><path d="M71.2 908.0 C86.8 775.9 99.1 643.8 104.6 593.5 C110.1 643.8 97.1 775.9 105.6 908.0 Z" fill="#7a9a3f"/><path d="M104.6 593.5 q17.2 9.4 9.6 34.6 q-9.6 6.3 -9.6 -34.6 Z" fill="#c7a24a"/><path d="M39.3 908.0 C57.6 776.8 61.1 645.6 69.0 595.7 C76.9 645.6 72.4 776.8 88.5 908.0 Z" fill="#5c7a33"/><path d="M254.5 908.0 C268.6 778.9 270.3 649.8 276.5 600.6 C282.7 649.8 280.1 778.9 293.0 908.0 Z" fill="#3d5724"/><path d="M276.5 600.6 q19.2 9.2 10.8 33.8 q-10.8 6.1 -10.8 -33.8 Z" fill="#c7a24a"/><path d="M45.0 908.0 C56.3 789.6 48.5 671.3 54.7 626.2 C60.8 671.3 67.8 789.6 83.4 908.0 Z" fill="#a85a34"/><path d="M54.7 626.2 q19.2 8.5 10.7 31.0 q-10.7 5.6 -10.7 -31.0 Z" fill="#c7a24a"/><path d="M6.2 908.0 C14.1 798.2 -15.4 688.5 -8.0 646.6 C-0.7 688.5 28.0 798.2 52.3 908.0 Z" fill="#5c7a33"/><path d="M204.9 908.0 C231.9 806.2 289.5 704.4 294.3 665.6 C299.2 704.4 241.0 806.2 235.4 908.0 Z" fill="#a85a34"/><path d="M148.7 908.0 C155.3 813.5 123.5 719.0 130.6 683.1 C137.7 719.0 168.6 813.5 192.9 908.0 Z" fill="#5c7a33"/><path d="M-37.2 908.0 C-23.4 817.5 -15.7 727.1 -10.5 692.6 C-5.2 727.1 -13.6 817.5 -4.4 908.0 Z" fill="#7a9a3f"/><path d="M309.2 908.0 C333.6 822.7 370.6 737.3 376.9 704.8 C383.3 737.3 345.4 822.7 348.7 908.0 Z" fill="#5c7a33"/><path d="M376.9 704.8 q19.8 6.1 11.1 22.4 q-11.1 4.1 -11.1 -22.4 Z" fill="#c7a24a"/></g><g transform="translate(1440,0) scale(-1,1)"><path d="M-1.7 908.0 C13.9 659.9 24.2 411.7 29.9 317.2 C35.7 411.7 24.7 659.9 34.3 908.0 Z" fill="#1e2c14"/><path d="M210.4 908.0 C237.9 661.7 298.0 415.5 302.8 321.6 C307.6 415.5 246.9 661.7 240.4 908.0 Z" fill="#1e2c14"/><path d="M33.2 908.0 C59.5 666.2 119.5 424.4 123.7 332.3 C128.0 424.4 67.4 666.2 59.7 908.0 Z" fill="#1e2c14"/><path d="M-29.1 908.0 C-2.7 683.0 53.1 457.9 57.9 372.2 C62.8 457.9 6.3 683.0 1.1 908.0 Z" fill="#1e2c14"/><path d="M154.4 908.0 C173.3 683.9 196.0 459.7 201.6 374.4 C207.3 459.7 183.9 683.9 189.8 908.0 Z" fill="#1e2c14"/><path d="M260.1 908.0 C285.2 692.9 330.6 477.7 336.2 395.7 C341.8 477.7 295.7 692.9 295.1 908.0 Z" fill="#1e2c14"/><path d="M191.9 908.0 C200.6 712.7 198.1 517.4 202.4 443.0 C206.7 517.4 208.7 712.7 218.7 908.0 Z" fill="#3d5724"/><path d="M179.7 908.0 C192.5 715.1 191.3 522.3 197.2 448.8 C203.1 522.3 203.6 715.1 216.8 908.0 Z" fill="#3d5724"/><path d="M197.2 448.8 q18.5 13.8 10.4 50.5 q-10.4 9.2 -10.4 -50.5 Z" fill="#c7a24a"/><path d="M17.7 908.0 C43.6 719.7 97.7 531.4 102.5 459.7 C107.4 531.4 52.6 719.7 47.8 908.0 Z" fill="#1e2c14"/><path d="M275.2 908.0 C288.8 726.5 297.1 545.0 302.2 475.8 C307.3 545.0 298.4 726.5 307.2 908.0 Z" fill="#3d5724"/><path d="M-3.6 908.0 C18.2 731.4 61.8 554.7 66.1 487.5 C70.4 554.7 26.2 731.4 23.2 908.0 Z" fill="#1e2c14"/><path d="M-10.4 908.0 C20.4 737.6 89.9 567.3 95.0 502.4 C100.1 567.3 29.9 737.6 21.2 908.0 Z" fill="#3d5724"/><path d="M244.0 908.0 C273.5 747.5 336.4 587.0 341.7 525.9 C347.0 587.0 283.5 747.5 277.4 908.0 Z" fill="#3d5724"/><path d="M278.6 908.0 C309.2 748.2 374.8 588.3 380.2 527.4 C385.7 588.3 319.4 748.2 312.8 908.0 Z" fill="#3d5724"/><path d="M92.6 908.0 C116.7 754.4 163.9 600.8 168.8 542.2 C173.8 600.8 125.9 754.4 123.2 908.0 Z" fill="#a85a34"/><path d="M168.8 542.2 q15.3 11.0 8.6 40.2 q-8.6 7.3 -8.6 -40.2 Z" fill="#c7a24a"/><path d="M84.9 908.0 C93.8 754.4 91.8 600.8 96.0 542.3 C100.3 600.8 101.7 754.4 111.5 908.0 Z" fill="#3d5724"/><path d="M226.3 908.0 C257.7 755.8 323.5 603.5 329.3 545.5 C335.1 603.5 268.6 755.8 262.7 908.0 Z" fill="#3d5724"/><path d="M329.3 545.5 q18.2 10.9 10.2 39.9 q-10.2 7.2 -10.2 -39.9 Z" fill="#c7a24a"/><path d="M262.8 908.0 C278.7 756.9 292.9 605.9 298.3 548.3 C303.7 605.9 288.9 756.9 296.6 908.0 Z" fill="#5c7a33"/><path d="M298.3 548.3 q16.9 10.8 9.5 39.6 q-9.5 7.2 -9.5 -39.6 Z" fill="#c7a24a"/><path d="M164.0 908.0 C183.9 757.0 213.1 606.1 218.4 548.5 C223.7 606.1 193.8 757.0 197.0 908.0 Z" fill="#3d5724"/><path d="M91.9 908.0 C111.3 759.3 138.0 610.5 143.3 553.9 C148.7 610.5 121.3 759.3 125.4 908.0 Z" fill="#a85a34"/><path d="M266.6 908.0 C277.8 773.9 273.9 639.8 279.5 588.7 C285.0 639.8 288.2 773.9 301.3 908.0 Z" fill="#3d5724"/><path d="M279.5 588.7 q17.4 9.6 9.7 35.1 q-9.7 6.4 -9.7 -35.1 Z" fill="#c7a24a"/><path d="M244.8 908.0 C268.6 776.9 292.1 645.7 299.9 595.8 C307.7 645.7 283.3 776.9 293.7 908.0 Z" fill="#5c7a33"/><path d="M299.9 595.8 q24.4 9.4 13.7 34.3 q-13.7 6.2 -13.7 -34.3 Z" fill="#c7a24a"/><path d="M38.8 908.0 C54.9 777.8 71.3 647.5 76.5 597.9 C81.8 647.5 64.8 777.8 71.6 908.0 Z" fill="#5c7a33"/><path d="M277.0 908.0 C296.4 779.3 322.4 650.6 327.9 601.5 C333.4 650.6 306.7 779.3 311.3 908.0 Z" fill="#3d5724"/><path d="M13.2 908.0 C35.8 788.3 67.6 668.6 73.8 623.0 C79.9 668.6 47.4 788.3 51.9 908.0 Z" fill="#5c7a33"/><path d="M73.8 623.0 q19.3 8.6 10.8 31.4 q-10.8 5.7 -10.8 -31.4 Z" fill="#c7a24a"/><path d="M125.0 908.0 C131.6 788.4 98.2 668.8 105.4 623.2 C112.7 668.8 145.2 788.4 170.3 908.0 Z" fill="#a85a34"/><path d="M105.4 623.2 q22.7 8.5 12.7 31.3 q-12.7 5.7 -12.7 -31.3 Z" fill="#c7a24a"/><path d="M312.1 908.0 C336.4 788.4 373.2 668.8 379.5 623.3 C385.8 668.8 348.2 788.4 351.5 908.0 Z" fill="#5c7a33"/><path d="M214.6 908.0 C229.6 789.1 239.0 670.2 244.6 624.9 C250.2 670.2 240.1 789.1 249.6 908.0 Z" fill="#5c7a33"/><path d="M244.6 624.9 q17.5 8.5 9.8 31.1 q-9.8 5.7 -9.8 -31.1 Z" fill="#c7a24a"/><path d="M6.1 908.0 C35.7 807.0 86.8 705.9 93.7 667.4 C100.5 705.9 48.6 807.0 49.1 908.0 Z" fill="#7a9a3f"/><path d="M93.7 667.4 q21.5 7.2 12.0 26.5 q-12.0 4.8 -12.0 -26.5 Z" fill="#c7a24a"/><path d="M123.1 908.0 C131.6 813.8 115.8 719.6 121.7 683.7 C127.6 719.6 142.7 813.8 160.0 908.0 Z" fill="#5c7a33"/><path d="M199.5 908.0 C229.4 815.5 273.4 723.0 281.3 687.8 C289.2 723.0 244.2 815.5 249.0 908.0 Z" fill="#5c7a33"/><path d="M281.3 687.8 q24.7 6.6 13.9 24.2 q-13.9 4.4 -13.9 -24.2 Z" fill="#c7a24a"/><path d="M-4.4 908.0 C3.7 824.9 -11.3 741.7 -5.6 710.0 C-0.0 741.7 14.2 824.9 30.7 908.0 Z" fill="#5c7a33"/></g>
+  <rect x="0" y="0" width="1440" height="900" fill="url(#vig)"/>
+  <rect x="0" y="0" width="1440" height="900" filter="url(#grain)" opacity="0.07"/>
+</svg></div>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="brand">
+      <h1>Jambo <span>Leaderboard</span></h1>
+      <p>Live scores</p>
+    </div>
+    <div class="controls">
+      <span class="status" id="status">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Loading…</span>
+      </span>
+    </div>
+  </header>
+
+  <div class="board">
+    <div class="scroll"><div id="mount"></div></div>
+  </div>
+
+  <p class="footnote">Updates automatically from the live sheet every 30 seconds.</p>
+</div>
+
+<script>
+/* ============================================================
+   LIVE BUILD — pulls the "Leaderboard" tab of the Google Sheet
+   as CSV (gviz endpoint) and re-renders every 30 seconds.
+   Requires the sheet to be shared "anyone with link can view".
+   ============================================================ */
+
+const SHEET_ID = "1ui5a6mI18m_ZzgXZSi-G6cmHyq385iE6KvLz1C8kYaQ";
+const SHEET_GID = "1296888730"; // "Leaderboard" tab
+const REFRESH_MS = 30000;
+
+/* column grouping — matched by header name, so it survives column shifts */
+const BONUS_COLS     = ["costume", "beach bocce", "double", "skunk given", "skunk taken", "other"];
+const POTENTIAL_COLS = ["double used", "potential", "real potential"];
+const CHECK_COL      = "double used";
+
+/* ---------- CSV parsing (handles quotes, commas, newlines) ---------- */
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = "", inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if (c === '"') inQuotes = true;
+      else if (c === ",") { row.push(field); field = ""; }
+      else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
+      else if (c === "\r") { /* skip */ }
+      else field += c;
+    }
+  }
+  row.push(field);
+  rows.push(row);
+  return rows;
+}
+
+const norm = s => String(s || "").trim().toLowerCase();
+
+/* ---------- locate the real table inside the sheet ---------- */
+function locateColumns(rows) {
+  let headerIdx = -1;
+  for (let r = 0; r < rows.length; r++) {
+    if (rows[r].some(c => norm(c).includes("team"))) { headerIdx = r; break; }
+  }
+  if (headerIdx === -1) return null;
+
+  const headerRow = rows[headerIdx];
+  const cols = [];
+  headerRow.forEach((cell, idx) => {
+    const label = String(cell).trim();
+    if (label === "") return;
+    // internal sort aid — not for the public board
+    if (norm(label).includes("tie-breaker") || norm(label).includes("tiebreaker")) return;
+    cols.push({ idx, label });
+  });
+  if (cols.length === 0) return null;
+
+  cols.forEach(col => {
+    const n = norm(col.label);
+    if (n.includes("team")) col.kind = "team";
+    else if (n === "rank")  col.kind = "rank";
+    else if (n === "points" || n === "pts") col.kind = "points";
+    else col.kind = "plain";
+    col.isCheck = n.includes(CHECK_COL);
+    if (POTENTIAL_COLS.some(p => n.includes(p)))      col.group = "POTENTIAL";
+    else if (BONUS_COLS.some(b => n.includes(b)))     col.group = "BONUS";
+    else col.group = "";
+  });
+
+  const teamCol = cols.find(c => c.kind === "team");
+
+  const dataRows = [];
+  for (let r = headerIdx + 1; r < rows.length; r++) {
+    const team = String(rows[r][teamCol.idx] || "").trim();
+    if (team === "") continue;
+    dataRows.push(rows[r]);
+  }
+
+  return { cols, dataRows };
+}
+
+/* ---------- render ---------- */
+function truthy(v) {
+  const n = norm(v);
+  return n === "true" || n === "yes" || n === "x" || n === "1" || n === "✓" || n === "☑";
+}
+
+function renderTable(model) {
+  const { cols, dataRows } = model;
+
+  let groupCells = "", prevGroup = null;
+  cols.forEach((col, i) => {
+    const g = col.group;
+    const startsGroup = g && g !== prevGroup;
+    const divide = (i > 0 && col.group !== cols[i - 1].group) ? " divide" : "";
+    if (g) {
+      if (startsGroup) {
+        const span = cols.filter(c => c.group === g).length;
+        groupCells += '<th class="group-band' + divide + '" colspan="' + span + '">' + g + '</th>';
+      }
+    } else {
+      groupCells += '<th class="spacer' + divide + '"></th>';
+    }
+    prevGroup = g;
+  });
+
+  const colCells = cols.map((col, i) => {
+    const divide = (i > 0 && col.group !== cols[i - 1].group) ? " divide" : "";
+    const teamH = col.kind === "team" ? " team-h" : "";
+    return '<th class="' + teamH + divide + '">' + escapeHtml(col.label) + '</th>';
+  }).join("");
+
+  const rankCol = cols.find(c => c.kind === "rank");
+
+  const body = dataRows.map((r, rowIdx) => {
+    let isLeader = rankCol
+      ? String(r[rankCol.idx]).trim() === "1"
+      : rowIdx === 0;
+
+    const tds = cols.map((col, i) => {
+      const raw = String(r[col.idx] == null ? "" : r[col.idx]).trim();
+      const divide = (i > 0 && col.group !== cols[i - 1].group) ? " divide" : "";
+
+      if (col.isCheck) {
+        const on = truthy(raw);
+        return '<td class="' + divide + '"><span class="check ' + (on ? "on" : "off") + '">' + (on ? "☑" : "☐") + '</span></td>';
+      }
+      if (col.kind === "team")   return '<td class="team' + divide + '">' + escapeHtml(raw || "—") + '</td>';
+      if (col.kind === "rank")   return '<td class="rank' + divide + '">' + escapeHtml(raw || "—") + '</td>';
+      if (col.kind === "points") return '<td class="points' + divide + '">' + escapeHtml(raw === "" ? "0" : raw) + '</td>';
+
+      const muted = (raw === "" || raw === "0") ? " muted" : "";
+      return '<td class="' + muted + divide + '">' + escapeHtml(raw === "" ? "—" : raw) + '</td>';
+    }).join("");
+
+    return '<tr class="' + (isLeader ? "leader" : "") + '">' + tds + '</tr>';
+  }).join("");
+
+  return '' +
+    '<table>' +
+      '<thead>' +
+        '<tr class="group">' + groupCells + '</tr>' +
+        '<tr class="cols">' + colCells + '</tr>' +
+      '</thead>' +
+      '<tbody>' + body + '</tbody>' +
+    '</table>';
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+  ));
+}
+
+/* ---------- live fetch + auto-refresh ---------- */
+const mount = document.getElementById("mount");
+const statusDot  = document.getElementById("statusDot");
+const statusText = document.getElementById("statusText");
+
+let hasRendered = false;
+
+function csvUrl() {
+  // cache-bust so browser/Google caches don't mask fresh scores
+  return "https://docs.google.com/spreadsheets/d/" + SHEET_ID +
+         "/gviz/tq?tqx=out:csv&gid=" + SHEET_GID + "&_=" + Date.now();
+}
+
+function fmtTime(d) {
+  let h = d.getHours(), m = d.getMinutes();
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return h + ":" + String(m).padStart(2, "0") + " " + ampm;
+}
+
+function setStatus(state, text) {
+  statusDot.className = "dot" + (state ? " " + state : "");
+  statusText.textContent = text;
+}
+
+async function load() {
+  try {
+    const res = await fetch(csvUrl(), { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const text = await res.text();
+    const model = locateColumns(parseCSV(text));
+    if (!model) throw new Error("Could not locate leaderboard table");
+    mount.innerHTML = renderTable(model);
+    hasRendered = true;
+    setStatus("live", "Live · updated " + fmtTime(new Date()));
+  } catch (err) {
+    // keep the last good board on screen; only show a message if we have nothing yet
+    if (!hasRendered) {
+      mount.innerHTML =
+        '<p style="padding:24px 16px;text-align:center;">' +
+        'Couldn’t reach the sheet — retrying…</p>';
+    }
+    setStatus("error", "Reconnecting…");
+  }
+}
+
+load();
+setInterval(load, REFRESH_MS);
+</script>
+</body>
+</html>

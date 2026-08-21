@@ -430,7 +430,7 @@ function locateColumns(rows) {
     col.isCheck = n.includes(CHECK_COL);
     if (POTENTIAL_COLS.some(p => n.includes(p)))      col.group = "POTENTIAL";
     else if (BONUS_COLS.some(b => n.includes(b)))     col.group = "BONUS";
-    else col.group = "";
+    else col.group = "STANDINGS";
   });
 
   const teamCol = cols.find(c => c.kind === "team");

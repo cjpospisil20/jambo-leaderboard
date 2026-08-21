@@ -84,10 +84,10 @@
 
   /* type scale — the mobile block at the bottom redefines these TOKENS,
      never the selectors, so components stay single-source. */
-  --fs-display:      clamp(34px, 12.4vh, 200px);  /* script face — small x-height */
+  --fs-display:      clamp(34px, 13.0vh, 210px);  /* script face — small x-height */
   --fs-lede:         clamp(10px, 0.95vw, 20px);  /* .status chip and .band__lede */
   --fs-band:         clamp(12px, 1.3vw, 30px);
-  --fs-colhead:      clamp(11px, 1.05vw, 25px);
+  --fs-colhead:      clamp(11px, 1.02vw, 24px);
   --fs-cell:         clamp(13px, 1.5vw, 34px);
   --fs-team:         clamp(12px, 1.3vw, 30px);
   --fs-points:       clamp(15px, 1.7vw, 38px);
@@ -371,7 +371,7 @@ html[data-doc] body { background: var(--background); }  /* spec pages read on pa
   justify-content: center;
   text-align: center;
   gap: 0;
-  padding: clamp(4px, 1vh, 16px) clamp(16px, 2vw, 40px) 0;
+  padding: clamp(6px, 2.3vh, 28px) clamp(16px, 2vw, 40px) 0;
 }
 .brand { display: contents; }
 .brand h1 {
@@ -391,7 +391,10 @@ html[data-doc] body { background: var(--background); }  /* spec pages read on pa
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: clamp(6px, 2.4vh, 34px);
+  /* Yellowtail's descenders hang well below the line box, so this clears the
+     wordmark's tail rather than the box the browser reports. */
+  margin-top: clamp(6px, 2.6vh, 30px);
+  margin-bottom: 0;
 }
 
 /* ---------- board ------------------------------------------------------- */
@@ -577,7 +580,7 @@ tbody td.tie {
   }
 
   .masthead { margin-bottom: var(--u4); padding: var(--u3) var(--u3); }
-  .status-row { margin-bottom: var(--u4); }
+  .status-row { margin-top: var(--u3); margin-bottom: var(--u3); }
 
   .board { flex: none; }
   .scroll {

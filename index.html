@@ -83,15 +83,15 @@
   }
   .brand h1 {
     margin: 0;
-    font-size: clamp(34px, 6vw, 60px);
-    font-weight: 700;
-    letter-spacing: 0.005em;
+    font-family: var(--script);
+    font-size: clamp(62px, 11vw, 138px);
+    font-weight: 400;
+    letter-spacing: 0.01em;
     line-height: 0.95;
-    color: #fff7d4;
-    -webkit-text-stroke: 2.4px var(--outline);
-    paint-order: stroke fill;
+    text-transform: none;
+    color: #fbe67b;
   }
-  .brand h1 span { color: var(--olive); }
+  .brand h1 span { color: #fbe67b; }
   .brand p {
     margin: 8px 0 0;
     font-size: 15px;
@@ -158,15 +158,15 @@
   thead tr.group th {
     background: #f4ead0;
     color: var(--olive);
-    font-family: var(--script);
-    font-size: 26px;
-    font-weight: 400;
-    letter-spacing: 0.01em;
-    text-transform: none;
-    padding: 8px 10px 3px;
+    font-family: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 9px 10px;
     border-bottom: 3px solid var(--outline);
     text-align: center;
-    -webkit-text-stroke: 0.8px var(--outline);
+    -webkit-text-stroke: 0.4px var(--outline);
     paint-order: stroke fill;
   }
   thead tr.group th.spacer { background: #f4ead0; -webkit-text-stroke: 0; }
@@ -174,17 +174,17 @@
   thead tr.cols th {
     background: var(--olive);
     color: #fff2ab;
-    font-family: var(--script);
-    font-size: 20px;
-    font-weight: 400;
-    letter-spacing: 0.01em;
-    text-transform: none;
-    padding: 9px 10px;
+    font-family: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 11px 10px;
     text-align: center;
     white-space: nowrap;
     position: sticky;
     top: 0;
-    -webkit-text-stroke: 0.9px var(--outline);
+    -webkit-text-stroke: 0.4px var(--outline);
     paint-order: stroke fill;
   }
   thead tr.cols th.team-h { text-align: left; }
@@ -194,17 +194,18 @@
     text-align: center;
     border-bottom: 1.5px solid var(--line);
     white-space: nowrap;
-    -webkit-text-stroke: 0.5px var(--outline);
+    font-weight: 400;
+    -webkit-text-stroke: 0.3px var(--outline);
     paint-order: stroke fill;
   }
   tbody tr:last-child td { border-bottom: none; }
   tbody td.team {
     text-align: left;
-    font-weight: 700;
+    font-weight: 400;
     color: var(--ink);
   }
-  tbody td.rank { font-weight: 700; color: var(--olive); width: 46px; }
-  tbody td.points { font-weight: 700; font-size: 16px; }
+  tbody td.rank { font-weight: 400; color: var(--olive); width: 46px; }
+  tbody td.points { font-weight: 400; font-size: 16px; }
   tbody td.muted { color: var(--ink-soft); -webkit-text-stroke: 0.3px var(--outline); }
 
   /* group dividers */
@@ -213,20 +214,14 @@
   /* alternating wash */
   tbody tr:nth-child(even) td { background: var(--sky-wash); }
 
-  /* leader */
-  tbody tr.leader td { background: var(--olive-wash); }
-  tbody tr.leader td.rank { position: relative; }
-  tbody tr.leader td.rank::before {
-    content: "";
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 5px;
-    background: var(--olive);
-  }
+  /* leader row intentionally styled the same as the other odd rows */
 
-  .check { font-size: 18px; line-height: 1; display: inline-block; -webkit-text-stroke: 0; }
-  .check.on  { color: var(--olive); }
-  .check.off { color: rgba(23,24,15,0.35); }
+  /* points tie: highlight team name + points cells (light green) */
+  tbody td.tie { background: #c7e9b0 !important; }
+
+  .check { font-size: 34px; line-height: 1; display: inline-block; -webkit-text-stroke: 0; color: #111; }
+  .check.on  { color: #111; }
+  .check.off { color: #111; }
 
   .footnote {
     margin-top: 18px;
@@ -258,7 +253,7 @@
   </defs>
   <rect x="0" y="0" width="1440" height="340" fill="url(#sky)"/>
   <circle cx="1150" cy="150" r="150" fill="url(#halo)"/><circle cx="1150" cy="150" r="58" fill="#ecbf55"/>
-  <g><path d="M170 120 C231 78 352 72 406 97 C444 78 535 91 550 120 Z" fill="#f4e4b6"/><path d="M170 120 L550 120 C436 132 284 132 170 120 Z" fill="#d3bd93" opacity="0.7"/></g><g><path d="M720 96 C771 60 874 55 918 76 C950 60 1027 71 1040 96 Z" fill="#f4e4b6"/><path d="M720 96 L1040 96 C944 106 816 106 720 96 Z" fill="#d3bd93" opacity="0.7"/></g><g><path d="M25 182 C65 152 145 148 180 166 C205 152 265 161 275 182 Z" fill="#f4e4b6"/><path d="M25 182 L275 182 C200 190 100 190 25 182 Z" fill="#d3bd93" opacity="0.7"/></g>
+  <g><path d="M30 120 C72 84 155 79 191 100 C217 84 280 95 290 120 Z" fill="#f4e4b6"/><path d="M30 120 L290 120 C212 130 108 130 30 120 Z" fill="#d3bd93" opacity="0.7"/></g><g><path d="M0 198 C30 176 91 173 118 186 C137 176 182 183 190 198 Z" fill="#f4e4b6"/><path d="M0 198 L190 198 C133 204 57 204 0 198 Z" fill="#d3bd93" opacity="0.7"/></g>
   <path d="M300 150 Q309 142 318 150 M318 150 Q327 142 336 150" stroke="#1b2a40" stroke-width="2.3" fill="none" opacity="0.6"/><path d="M352 134 Q361 126 370 134 M370 134 Q379 126 388 134" stroke="#1b2a40" stroke-width="2.3" fill="none" opacity="0.6"/><path d="M404 152 Q413 144 422 152 M422 152 Q431 144 440 152" stroke="#1b2a40" stroke-width="2.3" fill="none" opacity="0.6"/>
   <path d="M0 247.6 Q 50.4 247.6 90.0 246.1 Q 129.6 244.6 180.0 244.6 Q 230.4 244.6 270.0 244.0 Q 309.6 243.3 360.0 243.3 Q 410.4 243.3 450.0 250.8 Q 489.6 258.3 540.0 258.3 Q 590.4 258.3 630.0 254.9 Q 669.6 251.6 720.0 251.6 Q 770.4 251.6 810.0 252.7 Q 849.6 253.8 900.0 253.8 Q 950.4 253.8 990.0 252.4 Q 1029.6 251.1 1080.0 251.1 Q 1130.4 251.1 1170.0 249.4 Q 1209.6 247.7 1260.0 247.7 Q 1310.4 247.7 1350.0 251.2 Q 1389.6 254.6 1440.0 254.6" fill="none" stroke="#95a2c2" stroke-width="3" opacity="0.6"/><path d="M0 247.6 Q 50.4 247.6 90.0 246.1 Q 129.6 244.6 180.0 244.6 Q 230.4 244.6 270.0 244.0 Q 309.6 243.3 360.0 243.3 Q 410.4 243.3 450.0 250.8 Q 489.6 258.3 540.0 258.3 Q 590.4 258.3 630.0 254.9 Q 669.6 251.6 720.0 251.6 Q 770.4 251.6 810.0 252.7 Q 849.6 253.8 900.0 253.8 Q 950.4 253.8 990.0 252.4 Q 1029.6 251.1 1080.0 251.1 Q 1130.4 251.1 1170.0 249.4 Q 1209.6 247.7 1260.0 247.7 Q 1310.4 247.7 1350.0 251.2 Q 1389.6 254.6 1440.0 254.6 L1440 344 L0 344 Z" fill="#7d8bb0"/>
   <rect x="0" y="300" width="1440" height="70" fill="url(#wat)"/><rect x="0" y="300" width="1440" height="3" fill="#f4e4b6" opacity="0.5"/>
@@ -372,10 +367,7 @@ function locateColumns(rows) {
   const cols = [];
   headerRow.forEach((cell, idx) => {
     const label = String(cell).trim();
-    if (label === "") return;
-    // internal sort aid — not for the public board
-    if (norm(label).includes("tie-breaker") || norm(label).includes("tiebreaker")) return;
-    cols.push({ idx, label });
+    if (label !== "") cols.push({ idx, label });
   });
   if (cols.length === 0) return null;
 
@@ -434,24 +426,43 @@ function renderTable(model) {
     return '<th class="' + teamH + divide + '">' + escapeHtml(col.label) + '</th>';
   }).join("");
 
-  const rankCol = cols.find(c => c.kind === "rank");
+  const rankCol   = cols.find(c => c.kind === "rank");
+  const pointsCol = cols.find(c => c.kind === "points");
+
+  // points values shared by 2+ teams (ignoring not-yet-scored 0/blank) => tie highlight
+  const tieValues = new Set();
+  if (pointsCol) {
+    const counts = {};
+    dataRows.forEach(dr => {
+      const v = String(dr[pointsCol.idx] == null ? "" : dr[pointsCol.idx]).trim();
+      if (v === "" || v === "0") return;
+      counts[v] = (counts[v] || 0) + 1;
+    });
+    Object.keys(counts).forEach(k => { if (counts[k] >= 2) tieValues.add(k); });
+  }
 
   const body = dataRows.map((r, rowIdx) => {
     let isLeader = rankCol
       ? String(r[rankCol.idx]).trim() === "1"
       : rowIdx === 0;
 
+    const rowPts = pointsCol
+      ? String(r[pointsCol.idx] == null ? "" : r[pointsCol.idx]).trim()
+      : "";
+    const isTie = tieValues.has(rowPts);
+
     const tds = cols.map((col, i) => {
       const raw = String(r[col.idx] == null ? "" : r[col.idx]).trim();
       const divide = (i > 0 && col.group !== cols[i - 1].group) ? " divide" : "";
+      const tie = (isTie && (col.kind === "team" || col.kind === "points")) ? " tie" : "";
 
       if (col.isCheck) {
         const on = truthy(raw);
         return '<td class="' + divide + '"><span class="check ' + (on ? "on" : "off") + '">' + (on ? "☑" : "☐") + '</span></td>';
       }
-      if (col.kind === "team")   return '<td class="team' + divide + '">' + escapeHtml(raw || "—") + '</td>';
+      if (col.kind === "team")   return '<td class="team' + divide + tie + '">' + escapeHtml(raw || "—") + '</td>';
       if (col.kind === "rank")   return '<td class="rank' + divide + '">' + escapeHtml(raw || "—") + '</td>';
-      if (col.kind === "points") return '<td class="points' + divide + '">' + escapeHtml(raw === "" ? "0" : raw) + '</td>';
+      if (col.kind === "points") return '<td class="points' + divide + tie + '">' + escapeHtml(raw === "" ? "0" : raw) + '</td>';
 
       const muted = (raw === "" || raw === "0") ? " muted" : "";
       return '<td class="' + muted + divide + '">' + escapeHtml(raw === "" ? "—" : raw) + '</td>';

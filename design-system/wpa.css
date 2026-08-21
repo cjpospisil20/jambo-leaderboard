@@ -42,20 +42,27 @@
 /* ---------- 2. Token layer ---------------------------------------------- */
 :root {
   /* palette */
-  --background:      #F4EBD4;  /* aged cream / paper */
-  --surface:         #EADCC1;  /* light card tan */
-  --primary:         #2D4A43;  /* deep forest green */
-  --secondary:       #D96B43;  /* rust / Sedona orange */
-  --accent:          #EBB15B;  /* mustard yellow */
-  --text-primary:    #1E2926;  /* charcoal pine */
-  --text-muted:      #5C6B64;  /* sage shadow */
-  --border:          #2D4A43;  /* strong outline */
+  --page-ground:     #7F9FB8;  /* sky — the ground the illustration sits on */
+  --background:      #F4EAD0;  /* board / paper cream */
+  --surface:         #AFC0D3;  /* pale slate — zebra rows and card wash */
+  --primary:         #4A6C9B;  /* slate blue */
+  --secondary:       #C7A24A;  /* antique gold — accent rules */
+  --accent:          #ECBF55;  /* sun gold — highlight fills */
+  --text-primary:    #22231A;  /* warm near-black ink */
+  --text-muted:      #6B6A56;  /* warm gray */
+  --border:          #17180F;  /* near-black keyline */
+  --wordmark:        #FBE67B;  /* pale yellow script, reads on sky */
 
   /* derived pairings — see the contrast table in README.md.
-     --secondary and --accent NEVER carry text on cream. */
-  --on-primary:      var(--background);   /* cream on green   —  8.1:1 */
-  --on-secondary:    var(--text-primary); /* charcoal on rust —  4.4:1 */
-  --on-accent:       var(--text-primary); /* charcoal on gold —  7.8:1 */
+     --secondary and --accent NEVER carry text. Gold is a rule-and-fill color. */
+  --on-primary:      #FFF2AB;             /* pale yellow on blue —  4.8:1 */
+  --on-secondary:    var(--text-primary); /* ink on gold         —  6.6:1 */
+  --on-accent:       var(--text-primary); /* ink on sun gold     —  9.3:1 */
+
+  /* The points tie keeps its original dark green. It is a deliberate, long-
+     standing signal on this board and it measures 5.4:1 against white. */
+  --highlight:       #567233;
+  --on-highlight:    #FFFFFF;
 
   /* borders — sharp, printed */
   --border-w:        2px;
@@ -64,11 +71,12 @@
   --radius:          0px;
 
   /* shadows — flat offset blocks only */
-  --shadow-retro:    4px 4px 0px 0px var(--primary);
-  --shadow-press:    0px 0px 0px 0px var(--primary);
+  --shadow-retro:    4px 4px 0px 0px var(--border);
+  --shadow-press:    0px 0px 0px 0px var(--border);
 
   /* type */
   --font-display:    "National Park", "Volkhov", Georgia, serif;
+  --font-script:     "Yellowtail", "Brush Script MT", cursive;
   --font-body:       "Courier Prime", "DM Mono", "Share Tech Mono", ui-monospace, monospace;
   --tracking-display: 0.05em;
   --tracking-wide:   0.14em;
@@ -76,7 +84,7 @@
 
   /* type scale — the mobile block at the bottom redefines these TOKENS,
      never the selectors, so components stay single-source. */
-  --fs-display:      clamp(38px, 8.2vh, 150px);
+  --fs-display:      clamp(34px, 8.4vh, 150px);   /* script face — small x-height */
   --fs-lede:         clamp(10px, 0.95vw, 20px);
   --fs-band:         clamp(12px, 1.3vw, 30px);
   --fs-colhead:      clamp(10px, 0.92vw, 22px);
@@ -98,7 +106,7 @@ html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;                 /* locked one-screen board — see mobile block */
-  background: var(--background);
+  background: var(--page-ground);   /* sky. The BOARD is the paper, not the page. */
   color: var(--text-primary);
   font-family: var(--font-body);
   line-height: var(--leading-body);
@@ -110,14 +118,16 @@ html, body {
    data-doc on <html> — the styleguide does exactly that. Declared after the
    base rule so it wins without !important. */
 html[data-doc], html[data-doc] body { overflow: auto; height: auto; }
+html[data-doc] body { background: var(--background); }  /* spec pages read on paper */
 
 /* ---------- 4. Poster furniture ----------------------------------------- */
 
 /* The illustrated background. Hidden by default; the data-scene attribute on
    <html> picks exactly one. See index.html.
-     wpa     — flat WPA ridge composition, driven by the tokens above
+     shore   — flat sun / sand / grass / trees, full bleed  (default)
+     ridge   — flat mountain ridge band, pinned to the bottom edge
      classic — the original travel-poster scene, preserved verbatim
-     none    — no illustration, pure Unigrid on flat cream paper           */
+     none    — no illustration, flat sky                                   */
 .scene {
   position: fixed;
   inset: 0;
@@ -129,16 +139,19 @@ html[data-doc], html[data-doc] body { overflow: auto; height: auto; }
 }
 .scene svg { width: 100%; height: 100%; display: block; }
 
-[data-scene="wpa"]     .scene[data-name="wpa"]     { display: block; }
+[data-scene="shore"]   .scene[data-name="shore"]   { display: block; }
+[data-scene="ridge"]   .scene[data-name="ridge"]   { display: block; }
 [data-scene="classic"] .scene[data-name="classic"] { display: block; }
 
-/* The WPA scene is a band pinned to the bottom edge, not a full-bleed image.
-   On the locked desktop layout the board occupies nearly the whole viewport,
-   so a full-bleed illustration would be covered and only leak a few pixels of
-   unreadable color at the margins. A bottom band reads properly in the side
-   margins and in the strip beneath the board. The classic scene keeps its
-   original full-bleed behaviour. */
-.scene[data-name="wpa"] svg {
+/* "shore" is full bleed. It works because the masthead is transparent: the
+   board covers the middle of the viewport, but the sky, sun and treetops read
+   in the strip above it and the sand and grass read in the strip below. The
+   composition is drawn for those two strips specifically. */
+
+/* "ridge" is a band pinned to the bottom edge instead. Kept from the earlier
+   park treatment as an alternative — its fills are tokens, so it recolors to
+   whatever the palette currently is. */
+.scene[data-name="ridge"] svg {
   position: absolute;
   left: 0;
   right: 0;
@@ -327,8 +340,8 @@ html[data-doc], html[data-doc] body { overflow: auto; height: auto; }
   background: var(--text-muted);
   border: 1px solid var(--border);
 }
-.status .dot.live  { background: var(--primary); }
-.status .dot.error { background: var(--secondary); }
+.status .dot.live  { background: #3F7D4F; }   /* go green — not a palette role */
+.status .dot.error { background: #C07A2B; }   /* amber warning */
 
 /* ---------- .plaque — numeric display treatment ------------------------- */
 .plaque {
@@ -346,6 +359,10 @@ html[data-doc], html[data-doc] body { overflow: auto; height: auto; }
    ========================================================================== */
 
 /* ---------- masthead ---------------------------------------------------- */
+/* The masthead does NOT use .band. It floats directly on the sky so the sun and
+   the treetops read behind it — that is the whole reason the illustration is
+   visible at all on the locked one-screen layout. The .band archetype lives on
+   the table's column-label row instead. */
 .masthead {
   position: relative;
   flex: 0 0 auto;
@@ -355,21 +372,19 @@ html[data-doc], html[data-doc] body { overflow: auto; height: auto; }
   justify-content: center;
   text-align: center;
   gap: clamp(2px, 0.4vh, 7px);
-  padding: clamp(6px, 1.1vh, 16px) clamp(16px, 2vw, 40px)
-           calc(clamp(6px, 1.1vh, 16px) + var(--rule-accent-w));
+  padding: clamp(2px, 0.5vh, 8px) clamp(16px, 2vw, 40px);
 }
 .brand { display: contents; }
 .brand h1 {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-script);
   font-size: var(--fs-display);
-  font-weight: 800;
-  line-height: 0.92;
-  letter-spacing: var(--tracking-display);
-  text-transform: uppercase;
-  color: var(--on-primary);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  text-transform: none;      /* it is a script face — caps would be wrong */
+  color: var(--wordmark);
 }
-.brand h1 span { color: var(--accent); }
 .brand p {
   margin: 0;
   font-family: var(--font-body);
@@ -377,14 +392,14 @@ html[data-doc], html[data-doc] body { overflow: auto; height: auto; }
   font-size: var(--fs-lede);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--text-primary);
 }
+/* In normal flow, centred under the lede. Pinning it to a corner would drop it
+   on top of a tree now that the masthead is transparent. */
 .controls {
-  position: absolute;
-  top: clamp(8px, 1.2vh, 18px);
-  right: clamp(10px, 1.4vw, 26px);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--u3);
 }
 
@@ -418,37 +433,38 @@ table {
   table-layout: fixed;
 }
 
-/* Group band row — the deep green header with the rust accent line under it.
-   .spacer gets the same green so the band runs unbroken edge to edge. */
+/* Group row — paper ground, blue caps. Sits above the band. */
 thead tr.group th {
-  background: var(--primary);
-  color: var(--on-primary);
+  background: var(--background);
+  color: var(--primary);
   font-family: var(--font-display);
   font-size: var(--fs-band);
   font-weight: 800;
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
-  padding: clamp(4px, 0.7vh, 10px) var(--u2);
+  padding: clamp(3px, 0.55vh, 9px) var(--u2);
   text-align: center;
-  border-bottom: var(--rule-accent-w) solid var(--secondary);
+  border-bottom: var(--border-w-heavy) solid var(--border);
 }
 
-/* Column label row — tan sheet, charcoal caps, heavy rule closing the head. */
+/* Column label row — THIS is the .band archetype: colored header ground, bold
+   contrasting caps, and a distinct gold accent rule beneath. The original build
+   had its blue bar in exactly this position. */
 thead tr.cols th {
-  background: var(--surface);
-  color: var(--text-primary);
+  background: var(--primary);
+  color: var(--on-primary);
   font-family: var(--font-display);
   font-size: var(--fs-colhead);
   font-weight: 800;
   letter-spacing: var(--tracking-display);
   line-height: 1.05;
   text-transform: uppercase;
-  padding: clamp(5px, 0.8vh, 12px) var(--u1);
+  padding: clamp(4px, 0.62vh, 10px) var(--u1);
   text-align: center;
   white-space: normal;
   position: sticky;
   top: 0;
-  border-bottom: var(--border-w-heavy) solid var(--border);
+  border-bottom: var(--rule-accent-w) solid var(--secondary);
 }
 thead tr.cols th.team-h { text-align: left; padding-left: var(--u2); }
 
@@ -462,7 +478,7 @@ col.col-team   { width: 22%; }
 col.col-points { width: 7%; }
 
 tbody td {
-  padding: clamp(3px, 1.05vh, 22px) var(--u2);
+  padding: clamp(3px, 0.8vh, 20px) var(--u2);
   text-align: center;
   border-bottom: 1px solid var(--text-muted);
   white-space: nowrap;
@@ -480,6 +496,7 @@ tbody td.team {
   font-size: var(--fs-team);
 }
 tbody td.rank {
+  color: var(--primary);
   font-family: var(--font-display);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
@@ -499,12 +516,11 @@ td.divide, th.divide { border-left: var(--border-w-heavy) solid var(--border); }
    needs no !important to win — do not "simplify" this back to plain td. */
 tbody tr:nth-child(even) td:not(.tie) { background: var(--surface); }
 
-/* Points tie — a stamped mustard block on team name + points only.
-   Charcoal on mustard is 7.8:1. Cream on mustard would be 1.9:1, hence
-   --on-accent rather than a reversed treatment. */
+/* Points tie — the original dark green block on team name + points only.
+   White on that green is 5.4:1. */
 tbody td.tie {
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--highlight);
+  color: var(--on-highlight);
   box-shadow: inset 0 0 0 var(--border-w) var(--border);
 }
 
@@ -516,7 +532,7 @@ tbody td.tie {
   display: inline-block;
   color: var(--text-muted);
 }
-.check.on  { color: var(--secondary); }
+.check.on  { color: var(--primary); }
 .check.off { color: var(--text-muted); }
 
 /* Caption plaque. It sits over the scene band, so it carries its own paper
@@ -568,6 +584,19 @@ tbody td.tie {
   .page { display: block; height: auto; padding: var(--u4); gap: 0; }
 
   .poster-frame { display: none; }   /* trim line fights a scrolling page */
+
+  /* A portrait viewport slices a 2:1 composition down to its middle ~23%, which
+     throws away the sun and both treelines. Pin the shore scene to the bottom
+     at its native aspect instead, so the whole illustration is visible on a
+     phone. aspect-ratio matches the viewBox exactly, so nothing is cropped. */
+  .scene[data-name="shore"] svg {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1440 / 720;
+  }
 
   .masthead { margin-bottom: var(--u4); padding: var(--u4) var(--u3) calc(var(--u4) + var(--rule-accent-w)); }
   .controls { position: static; width: 100%; justify-content: center; margin-top: var(--u3); }

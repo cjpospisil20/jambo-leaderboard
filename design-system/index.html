@@ -7,7 +7,7 @@
 <title>WPA-National-Park-Vintage — Design System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Yellowtail&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="wpa.css">
 <style>
   /* Styleguide chrome only. Nothing here is part of the system —
@@ -42,49 +42,57 @@
 <body>
 <div class="ds">
 
-  <header class="masthead band" style="align-items:flex-start;text-align:left">
-    <h1 class="band__title" style="font-size:clamp(30px,5vw,64px)">WPA · National Park · Vintage</h1>
+  <header class="band" style="padding:var(--u5) var(--u6) calc(var(--u5) + 4px)">
+    <h1 class="band__title" style="font-size:clamp(28px,4.6vw,58px)">Jambo · Vintage Shore</h1>
     <p class="band__lede">Design system — Jambo Leaderboard</p>
   </header>
 
   <section>
     <h2>Palette</h2>
-    <p class="note">Eight tokens, no tints or shades. Everything in the system is built from these.</p>
+    <p class="note">No tints or shades. Everything in the system is built from these.
+       The page sits on sky; the board is the paper.</p>
     <div class="swatches">
-      <div class="sw"><i style="background:var(--background)"></i><b>Background</b><code>#F4EBD4 · aged cream</code></div>
-      <div class="sw"><i style="background:var(--surface)"></i><b>Surface</b><code>#EADCC1 · card tan</code></div>
-      <div class="sw"><i style="background:var(--primary)"></i><b>Primary</b><code>#2D4A43 · forest green</code></div>
-      <div class="sw"><i style="background:var(--secondary)"></i><b>Secondary</b><code>#D96B43 · rust</code></div>
-      <div class="sw"><i style="background:var(--accent)"></i><b>Accent</b><code>#EBB15B · mustard</code></div>
-      <div class="sw"><i style="background:var(--text-primary)"></i><b>Text primary</b><code>#1E2926 · charcoal pine</code></div>
-      <div class="sw"><i style="background:var(--text-muted)"></i><b>Text muted</b><code>#5C6B64 · sage shadow</code></div>
-      <div class="sw"><i style="background:var(--border)"></i><b>Border</b><code>#2D4A43 · outline</code></div>
+      <div class="sw"><i style="background:var(--page-ground)"></i><b>Page ground</b><code>#7F9FB8 · sky</code></div>
+      <div class="sw"><i style="background:var(--background)"></i><b>Background</b><code>#F4EAD0 · paper cream</code></div>
+      <div class="sw"><i style="background:var(--surface)"></i><b>Surface</b><code>#AFC0D3 · pale slate</code></div>
+      <div class="sw"><i style="background:var(--primary)"></i><b>Primary</b><code>#4A6C9B · slate blue</code></div>
+      <div class="sw"><i style="background:var(--secondary)"></i><b>Secondary</b><code>#C7A24A · antique gold</code></div>
+      <div class="sw"><i style="background:var(--accent)"></i><b>Accent</b><code>#ECBF55 · sun gold</code></div>
+      <div class="sw"><i style="background:var(--text-primary)"></i><b>Text primary</b><code>#22231A · warm ink</code></div>
+      <div class="sw"><i style="background:var(--text-muted)"></i><b>Text muted</b><code>#6B6A56 · warm gray</code></div>
+      <div class="sw"><i style="background:var(--border)"></i><b>Border</b><code>#17180F · keyline</code></div>
+      <div class="sw"><i style="background:var(--on-primary)"></i><b>On primary</b><code>#FFF2AB · pale yellow</code></div>
+      <div class="sw"><i style="background:var(--wordmark)"></i><b>Wordmark</b><code>#FBE67B · script yellow</code></div>
+      <div class="sw"><i style="background:var(--highlight)"></i><b>Highlight</b><code>#567233 · points tie</code></div>
     </div>
   </section>
 
   <section>
     <h2>Contrast rules</h2>
-    <p class="note">Two of these colors cannot legally carry text on cream. That constraint drives
-       several decisions in the system — notably why the tie highlight is charcoal on mustard
-       rather than the reverse.</p>
+    <p class="note">Both golds are too light to carry text on paper — tighter than the rust they
+       replaced, so the rule matters more, not less. Gold is a rule-and-fill color only. That
+       constraint is why the points tie keeps its own dark green rather than becoming a gold stamp.</p>
     <table class="ct">
       <tr><th>Pair</th><th>Ratio</th><th>Rule</th></tr>
-      <tr><td>text-primary on background</td><td>12.6:1</td><td>Default body text</td></tr>
-      <tr><td>text-primary on surface</td><td>11.1:1</td><td>Text on tan cards and zebra rows</td></tr>
-      <tr><td>background on primary</td><td>8.1:1</td><td>Cream on the green band</td></tr>
-      <tr><td>text-primary on accent</td><td>7.8:1</td><td>The highlight pattern</td></tr>
-      <tr><td>text-primary on secondary</td><td>4.4:1</td><td>Charcoal on rust</td></tr>
-      <tr><td>text-muted on background</td><td>4.7:1</td><td>Muted cells only — just passes AA</td></tr>
-      <tr><td class="banned">secondary on background</td><td class="banned">2.9:1</td><td class="banned">Rules, fills and borders only. Never text.</td></tr>
-      <tr><td class="banned">accent on background</td><td class="banned">1.6:1</td><td class="banned">Fill only. Never text.</td></tr>
+      <tr><td>text-primary on background</td><td>13.2:1</td><td>Default body text</td></tr>
+      <tr><td>text-primary on accent</td><td>9.3:1</td><td>Ink on sun gold</td></tr>
+      <tr><td>text-primary on surface</td><td>8.5:1</td><td>Text on the slate zebra rows</td></tr>
+      <tr><td>text-primary on secondary</td><td>6.6:1</td><td>Ink on antique gold</td></tr>
+      <tr><td>on-highlight on highlight</td><td>5.4:1</td><td>The points-tie block</td></tr>
+      <tr><td>on-primary on primary</td><td>4.8:1</td><td>Pale yellow on blue — bold headers only</td></tr>
+      <tr><td>text-muted on background</td><td>4.6:1</td><td>Muted cells only — just passes AA</td></tr>
+      <tr><td class="banned">secondary on background</td><td class="banned">2.0:1</td><td class="banned">Rules, fills and borders only. Never text.</td></tr>
+      <tr><td class="banned">accent on background</td><td class="banned">1.4:1</td><td class="banned">Fill only. Never text.</td></tr>
     </table>
   </section>
 
   <section>
     <h2>Typography</h2>
-    <p class="note">Display is National Park, self-hosted at 400/700/800. Body is Courier Prime.
-       Display type is always uppercase and always solid heavy weight — never outlined.</p>
-    <p class="specimen" style="font-size:3rem">Sedona Ridge</p>
+    <p class="note">Three faces. Yellowtail carries the wordmark only. National Park, self-hosted at
+       400/700/800, is the display face — always uppercase, always solid heavy weight, never
+       outlined. Courier Prime is the body and keeps the score columns aligned.</p>
+    <p style="font-family:var(--font-script);font-size:3.5rem;line-height:1;margin:0 0 var(--u4);color:var(--primary)">Jambo Leaderboard</p>
+    <p class="specimen" style="font-size:3rem">Dune Grass</p>
     <p class="specimen" style="font-size:1.75rem;font-weight:700">Ranger Station 700</p>
     <p class="specimen" style="font-size:1.1rem;font-weight:400">Trailhead 400 · ABCDEFGHIJKLM · 0123456789</p>
     <hr class="rule--accent" style="margin:var(--u4) 0">
@@ -143,18 +151,21 @@
 
   <section>
     <h2>Band header</h2>
-    <p class="note">Deep forest green ground, cream display type, one rust accent rule beneath.
-       The rule is an inset shadow so it sits inside the outline.</p>
+    <p class="note">Slate blue ground, pale yellow display caps, one gold accent rule beneath.
+       The rule is an inset shadow so it sits inside the outline. On the leaderboard this
+       archetype lives on the table's column-label row, not the masthead — the masthead is
+       transparent so the illustration reads behind it.</p>
     <header class="band" style="padding:var(--u5) var(--u6) calc(var(--u5) + 4px)">
-      <p class="band__title" style="font-size:2.25rem">Jambo Leaderboard</p>
-      <p class="band__lede">Live scores</p>
+      <p class="band__title" style="font-size:2rem">Standings</p>
+      <p class="band__lede">Rank · Team · Points</p>
     </header>
   </section>
 
   <section>
     <h2>Data grid</h2>
-    <p class="note">The leaderboard table. Green group band, tan column labels, tan zebra, 3px
-       Unigrid verticals at group boundaries. The mustard cells are the points-tie highlight.</p>
+    <p class="note">The leaderboard table. Paper group row with blue caps, the blue band on the
+       column labels with its gold rule, slate zebra, 3px Unigrid verticals at group boundaries.
+       The dark green cells are the points-tie highlight.</p>
     <div class="unigrid">
       <table>
         <colgroup><col class="col-rank"><col class="col-team"><col class="col-points"><col><col></colgroup>
